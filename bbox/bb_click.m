@@ -18,7 +18,7 @@
 % jorgeb - ToDo - bb_click needs tlda as an argument, not tld.
 % The size of tlda will provide the number of bounding boxes.
 
-function bounding_boxes = bb_click(tld,img)
+function bounding_boxes = bb_click(tld,img,num_tracked)
 % Create
 
 % jorgeb - Added (~isempty(tld.handle)) to conditional below
@@ -31,8 +31,9 @@ end
 text(10,10,'Select objects to track','color','red');
 %bounding_boxes = zeros(4,3); % jorgeb - ToDo - Remove hardwired values
 
-for i = 1:4   % jorgeb - ToDo - Remove hardwired values
-h = imrect;   % jorgeb - Create draggable rectangle interactively
-p = wait(h);  % jorgeb - Wait until data acquisition on object h is complete
-bounding_boxes(:,i) = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
+
+for i = 1:num_tracked   % jorgeb - ToDo - Remove hardwired values
+    h = imrect;   % jorgeb - Create draggable rectangle interactively
+    p = wait(h);  % jorgeb - Wait until data acquisition on object h is complete
+    bounding_boxes(:,i) = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
 end

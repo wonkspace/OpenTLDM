@@ -24,16 +24,20 @@ global num_tracked; % jorgeb - Total number of objects tracked
 
 opt.source = tldInitSource(opt.source); % select data source, camera/directory
 
+num_tracked=inputdlg('Number of Objects','No: ');
+num_tracked=str2num(num_tracked{1});
+
 figure(2); set(2,'KeyPressFcn', @handleKey); % open figure for display of results
 finish = 0; function handleKey(~,~), finish = 1; end % by pressing any key, the process will exit
 
 while 1
-    source = tldInitFirstFrame(tld,opt.source,opt.model.min_win); % get initial bounding box, return 'empty' if bounding box is too small
+    source = tldInitFirstFrame(tld,opt.source,opt.model.min_win,num_tracked); % get initial bounding box, return 'empty' if bounding box is too small
     if ~isempty(source), opt.source = source; break; end % check size
 end
 
 % jorgeb - Number of objects being tracked
-num_tracked = size(source.bounding_boxes, 2);
+%num_tracked = size(source.bounding_boxes, 2);
+%fprintf('No. tracked: %d\n',num_tracked);
 %fields = initialize_fields(fields, num_tracked);      % jorgeb
 %initialize_fields(num_tracked);                        % jorgeb
 

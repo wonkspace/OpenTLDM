@@ -1,0 +1,2 @@
+
+i=inputdlg('Number: ','How many objects to track')

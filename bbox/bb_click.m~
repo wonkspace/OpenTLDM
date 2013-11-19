@@ -15,41 +15,26 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
+% jorgeb - ToDo - bb_click needs tlda as an argument, not tld.
+% The size of tlda will provide the number of bounding boxes.
 
-% jorgeb - Modified return of function [bb1, bb2, bb3] = bb_click(tld,img)
 function bounding_boxes = bb_click(tld,img)
 % Create
 
-if isfield(tld,'handle')
+% jorgeb - Added (~isempty(tld.handle)) to conditional below
+if (isfield(tld,'handle') && (~isempty(tld.handle)))
      h = get(gca,'Children'); delete(h(1:end-1));
     set(tld.handle,'cdata',img);
 else
-    imshow(img);
+    himage=imshow(img);
 end
 text(10,10,'Select objects to track','color','red');
-%bbs = zeros(3,4);  % jorgeb - ToDo - Remove hardwired values
+%bounding_boxes = zeros(4,3); % jorgeb - ToDo - Remove hardwired values
 
-%for i = 1:3   % jorgeb - ToDo - Remove hardwired values
-h = imrect;   % jorgeb - Create draggable rectangle interactively
+
+no_objects=input('Number of Objects')
+for i = 1:no_objects   % jorgeb - ToDo - Remove hardwired values
+    h = imrect(himage);   % jorgeb - Create draggable rectangle interactively
 p = wait(h);  % jorgeb - Wait until data acquisition on object h is complete
-bb1 = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
-%bbs(i) = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
-%end
-
-h = imrect;
-p = wait(h);
-bb2 = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
-
-h = imrect;
-p = wait(h);
-bb3 = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
-
-bounding_boxes = [bb1, bb2, bb3];
-%bounding_boxes = bbs;
-
-% [c,r,p] = impixel(img);
-% if length(c) ~= 2,
-%     bb = [];
-%     return;
-% end
-% bb = [c(1); r(1); c(2); r(2)];
+bounding_boxes(:,i) = [p(1); p(2);p(1)+p(3); p(2)+p(4)];
+end
