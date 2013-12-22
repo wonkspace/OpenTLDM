@@ -21,272 +21,160 @@
 #include <map>
 #include <set>
 #include "tld.h"
-#ifdef _CHAR16T
-#define CHAR16_T
-#endif
 #include "mex.h" 
-using namespace std;
-//extern void _main();
-/*
-double* id;
-double thrN;
-int nBBOX;
-int mBBOX;
-int nTREES;
-int nFEAT;
-int nSCALE;
-int iHEIGHT;
-int iWIDTH;
-int *BBOX = NULL;
-int *OFF  = NULL;
-double *IIMG = 0;
-double *IIMG2 = 0;
-vector<vector <double> > WEIGHT;
-vector<vector <int> > nP;
-vector<vector <int> > nN;
-int BBOX_STEP = 7;
-int nBIT = 1; // number of bits per feature
-*/
-double* id_;
-static int id = 0;
-vector<vector<double> > initw;
-vector<vector<int> > initn;
-struct fieldstruct {
-	double thrN;
-	int nBBOX;
-	int mBBOX;
-	int nTREES;
-	int nFEAT;
-	int nSCALE;
-	int iHEIGHT;
-	int iWIDTH;
-	int *BBOX;
-	int *OFF;
-	double *IIMG;
-	double *IIMG2;
-	vector<vector <double> > WEIGHT;
-	vector<vector <int> > nP;
-	vector<vector <int> > nN;
-	int BBOX_STEP;
-	int nBIT; // number of bits per feature
-} fields[] = {
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 }
-};
 
-//struct fieldstruct * fields = malloc(sizeof(fieldstruct)*5);
-
-
-
-//static int size = 4;              // jorgeb - ToDo - Remove hard-wired value
-//fieldstruct * fields = new fieldstruct[size];  // jorgeb
-
+#ifdef _CHAR16T
+	#define CHAR16_T
+#endif
 #define sub2idx(row,col,height) ((int) (floor((row)+0.5) + floor((col)+0.5)*(height)))
 
+using namespace std;
 
-//Fernstruct fern2;
-//Fernstruct* tmp;
-/*
-struct list_element {
-	Fernstruct* fern;
-	list_element* next;
-} *list_head;
+class ImageObject {
+	private:
+		static double thrN;
+		static int nBBOX;
+		static int mBBOX;
+		static int nTREES;
+		static int nFEAT;
+		static int nSCALE;
+		static int iHEIGHT;
+		static int iWIDTH;
+		static int *BBOX = NULL;
+		static int *OFF  = NULL;
+		static double *IIMG = 0;
+		static double *IIMG2 = 0;
+		static vector<vector <double> > WEIGHT;
+		static vector<vector <int> > nP;
+		static vector<vector <int> > nN;
+		static int BBOX_STEP;
+		static int nBIT; // number of bits per feature
 
-Fernstruct* fern;
-*/
 
-//vector<vector <double>> curWEIGHT;
-/*
-// append a fern to the end of the list
-void list_append(Fernstruct* newfern) {
-	//if(newfern == NULL)
-	//	throw mwException("ERROR: Tried to append empty element to linked list");
-	list_element* new_element = (list_element*)malloc(sizeof(list_element)); // allocate memory
-
-	new_element->fern = newfern; // put the fern in the list element
-	mexPrintf("the fern being added to the list has an id of %f\n", new_element->fern->id);
-	new_element->next = NULL;
-	list_element* iter = list_head; // iterator 
-	if(iter == NULL)
-		list_head = new_element;
-	else {
-		while(iter->next != NULL) {
-			//mexPrintf("found non-null item!!!\n");
-			iter = iter->next;
-		}
-		iter->next = new_element;
+	ImageObject(int size) { // Contructor 
+		thrN = 0.0;
+		nBBOX = 0;
+		mBBOX = 0;
+		nTREES = 0;
+		nFEAT = 0;
+		nSCALE = 0;
+		iHEIGHT = 0;
+		iWIDTH = 0;
+		BBOX = NULL;
+		OFF = NULL;
+		IIMG = 0;
+		IIMG2 = 0;
+		WEIGHT = initw;
+		nP = initn;
+		nN = initn;
+		BBOX_STEP = 7;
+		nBIT = 1;
 	}
-}
 
-// find an element, returns null if not found
-Fernstruct* list_find(double id) {
-	list_element* iter = list_head; // iterator
-	while(iter != NULL) { 
-		//		mexPrintf("found something!!!! it has id of %f, looking for id of %f\n", iter->fern->id, id);
-		if(iter->fern->id == id) { 
-		//	mexPrintf("found the list element!\n");
-			return iter->fern;
-		}
-		iter = iter->next;
-	}
-	mexPrintf("didn't find the list element1!!!!\n");
-	return NULL;
-}
-*/
-/*
-fieldstruct * initialize_fields(fieldstruct* fields, int size) {   // jorgeb
-    for (int i=0; i<size; i++) {
-    	fields[i].thrN = 0.0;
-    	fields[i].nBBOX = 0;
-    	fields[i].mBBOX = 0;
-    	fields[i].nTREES = 0;
-    	fields[i].nFEAT = 0;
-    	fields[i].nSCALE = 0;
-    	fields[i].iHEIGHT = 0;
-    	fields[i].iWIDTH = 0;
-    	fields[i].BBOX = NULL;
-    	fields[i].OFF = NULL;
-    	fields[i].IIMG = 0;
-    	fields[i].IIMG2 = 0;
-    	fields[i].WEIGHT = initw;
-    	fields[i].nP = initn;
-    	fields[i].nN = initn;
-    	fields[i].BBOX_STEP = 7;
-    	fields[i].nBIT = 1;
-    }
-return fields;
-}
-*/
-
-//static int size = 4;                           // jorgeb - hardwired
-//fieldstruct * fields = new fieldstruct[size];  // jorgeb
-//fields = initialize_fields(fields, size);      // jorgeb - ToDo - Remove hardwired value
-
-void initialize_fields(int size) {   //jorgeb
-    for (int i=0; i<size; i++) {
-    	fields[i].thrN = 0.0;
-    	fields[i].nBBOX = 0;
-    	fields[i].mBBOX = 0;
-    	fields[i].nTREES = 0;
-    	fields[i].nFEAT = 0;
-    	fields[i].nSCALE = 0;
-    	fields[i].iHEIGHT = 0;
-    	fields[i].iWIDTH = 0;
-    	fields[i].BBOX = NULL;
-    	fields[i].OFF = NULL;
-    	fields[i].IIMG = 0;
-    	fields[i].IIMG2 = 0;
-    	fields[i].WEIGHT = initw;
-    	fields[i].nP = initn;
-    	fields[i].nN = initn;
-    	fields[i].BBOX_STEP = 7;
-    	fields[i].nBIT = 1;
-    }
-}
-
-//static int size = 4;                           // jorgeb - hardwired
-//fieldstruct * fields = new fieldstruct[size];  // jorgeb
-//fields = initialize_fields(fields, size);      // jorgeb - ToDo - Remove hardwired value
+	~ImageObject(){}; // Destructor
 
 
-void update(double *x, int C, int N) {
-//	mexPrintf("here1\n");
-	for (int i = 0; i < fields[id].nTREES; i++) {
-		int idx = (int) x[i];
+	void ImageObject::update(double *x, int C, int N) {
+		for (int i = 0; i < nTREES; i++) {
 
-		(C==1) ? (fields[id].nP[i][idx] += N) : (fields[id].nN[i][idx] += N);
+			int idx = (int) x[i];
 
-		if (fields[id].nP[i][idx]==0) {
-			fields[id].WEIGHT[i][idx] = 0;
-		} else {
-			fields[id].WEIGHT[i][idx] = ((double) (fields[id].nP[i][idx])) / (fields[id].nP[i][idx] + fields[id].nN[i][idx]);
-		}
-	}
-	////mexPrintf("here2\n");
-}
+			(C==1) ? nP[i][idx] += N : nN[i][idx] += N;
 
-
-double measure_forest(double *idx) {
-	double votes = 0;
-	for (int i = 0; i < fields[id].nTREES; i++) { 
-		votes += fields[id].WEIGHT[i][idx[i]];
-	}
-	return votes;
-}
-
-
-int measure_tree_offset(unsigned char *img, int idx_bbox, int idx_tree) {
-	
-	int index = 0;
-	int *bbox = fields[id].BBOX + idx_bbox*(fields[id].BBOX_STEP);
-	int *off = (fields[id].OFF) + bbox[5] + idx_tree*2*(fields[id].nFEAT);
-	for (int i=0; i<(fields[id].nFEAT); i++) {
-		index<<=1; 
-		int fp0 = img[off[0]+bbox[0]];
-		int fp1 = img[off[1]+bbox[0]];
-		if (fp0>fp1) { index |= 1;}
-		off += 2;
-	}
-	return index;	
-}
-
-
-double measure_bbox_offset(unsigned char *blur, int idx_bbox, double minVar, double *tPatt) {
-	double conf = 0.0;
-	double bboxvar = bbox_var_offset(fields[id].IIMG,fields[id].IIMG2,(fields[id].BBOX)+idx_bbox*(fields[id].BBOX_STEP));
-	if (bboxvar < minVar) {	return conf; }
-	for (int i = 0; i < (fields[id].nTREES); i++) { 
-		int idx = measure_tree_offset(blur,idx_bbox,i);
-		tPatt[i] = idx;
-		conf += fields[id].WEIGHT[i][idx];
-	}
-	return conf;
-}
-
-int* create_offsets(double *scale0, double *x0) {
-
-	int *offsets = (int*) malloc(fields[id].nSCALE*fields[id].nTREES*fields[id].nFEAT*2*sizeof(int));
-	int *off = offsets;
-
-	for (int k = 0; k < fields[id].nSCALE; k++){
-		double *scale = scale0+2*k;
-		for (int i = 0; i < fields[id].nTREES; i++) {
-			for (int j = 0; j < fields[id].nFEAT; j++) {
-				double *x  = x0 +4*j + (4*fields[id].nFEAT)*i;
-				*off++ = sub2idx((scale[0]-1)*x[1],(scale[1]-1)*x[0],fields[id].iHEIGHT);
-				*off++ = sub2idx((scale[0]-1)*x[3],(scale[1]-1)*x[2],fields[id].iHEIGHT);
+			if (nP[i][idx]==0) {
+				WEIGHT[i][idx] = 0;
+			} else {
+				WEIGHT[i][idx] = ((double) (nP[i][idx])) / (nP[i][idx] + nN[i][idx]);
 			}
 		}
 	}
-	return offsets;
-}
 
-int* create_offsets_bbox(double *bb0) {
 
-	int *offsets = (int*) malloc(fields[id].BBOX_STEP*fields[id].nBBOX*sizeof(int));
-	int *off = offsets;
-
-	for (int i = 0; i < fields[id].nBBOX; i++) {
-		double *bb = bb0+fields[id].mBBOX*i;
-		*off++ = sub2idx(bb[1]-1,bb[0]-1,fields[id].iHEIGHT);
-		*off++ = sub2idx(bb[3]-1,bb[0]-1,fields[id].iHEIGHT);
-		*off++ = sub2idx(bb[1]-1,bb[2]-1,fields[id].iHEIGHT);
-		*off++ = sub2idx(bb[3]-1,bb[2]-1,fields[id].iHEIGHT);
-		*off++ = (int) ((bb[2]-bb[0])*(bb[3]-bb[1]));
-		*off++ = (int) (bb[4]-1)*2*fields[id].nFEAT*fields[id].nTREES; // pointer to features for this scale
-		*off++ = bb[5]; // number of left-right bboxes, will be used for searching neighbors
+	double ImageObject::measure_forest(double *idx) {
+		double votes = 0;
+		for (int i = 0; i < nTREES; i++) { 
+			votes += WEIGHT[i][idx[i]];
+		}
+		return votes;
 	}
-	return offsets;
+
+
+	int ImageObject::measure_tree_offset(unsigned char *img, int idx_bbox, int idx_tree) {
+
+		int index = 0;
+		int *bbox = BBOX + idx_bbox*BBOX_STEP;
+		int *off = OFF + bbox[5] + idx_tree*2*nFEAT;
+		for (int i=0; i<nFEAT; i++) {
+			index<<=1; 
+			int fp0 = img[off[0]+bbox[0]];
+			int fp1 = img[off[1]+bbox[0]];
+			if (fp0>fp1) { index |= 1;}
+			off += 2;
+		}
+		return index;	
+	}
+
+
+	double ImageObject::measure_bbox_offset(unsigned char *blur, int idx_bbox, double minVar, double *tPatt) {
+
+		double conf = 0.0;
+		double bboxvar = bbox_var_offset(IIMG,IIMG2,BBOX+idx_bbox*BBOX_STEP);
+		if (bboxvar < minVar) {	return conf; }
+
+		for (int i = 0; i < nTREES; i++) { 
+			int idx = measure_tree_offset(blur,idx_bbox,i);
+			tPatt[i] = idx;
+			conf += WEIGHT[i][idx];
+		}
+		return conf;
+	}
+
+	int* ImageObject::create_offsets(double *scale0, double *x0) {
+
+		int *offsets = (int*) malloc(nSCALE*nTREES*nFEAT*2*sizeof(int));
+		int *off = offsets;
+
+		for (int k = 0; k < nSCALE; k++){
+			double *scale = scale0+2*k;
+			for (int i = 0; i < nTREES; i++) {
+				for (int j = 0; j < nFEAT; j++) {
+					double *x  = x0 +4*j + (4*nFEAT)*i;
+					*off++ = sub2idx((scale[0]-1)*x[1],(scale[1]-1)*x[0],iHEIGHT);
+					*off++ = sub2idx((scale[0]-1)*x[3],(scale[1]-1)*x[2],iHEIGHT);
+				}
+			}
+		}
+		return offsets;
+	}
+
+	int* ImageObject::create_offsets_bbox(double *bb0) {
+
+		int *offsets = (int*) malloc(BBOX_STEP*nBBOX*sizeof(int));
+		int *off = offsets;
+
+		for (int i = 0; i < nBBOX; i++) {
+			double *bb = bb0+mBBOX*i;
+			*off++ = sub2idx(bb[1]-1,bb[0]-1,iHEIGHT);
+			*off++ = sub2idx(bb[3]-1,bb[0]-1,iHEIGHT);
+			*off++ = sub2idx(bb[1]-1,bb[2]-1,iHEIGHT);
+			*off++ = sub2idx(bb[3]-1,bb[2]-1,iHEIGHT);
+			*off++ = (int) ((bb[2]-bb[0])*(bb[3]-bb[1]));
+			*off++ = (int) (bb[4]-1)*2*nFEAT*nTREES; // pointer to features for this scale
+			*off++ = bb[5]; // number of left-right bboxes, will be used for searching neighbours
+		}
+		return offsets;
+	}
+
+
+	double ImageObject::randdouble() 
+	{ 
+		return rand()/(double(RAND_MAX)+1); 
+	} 
 }
 
-
-double randdouble() 
-{ 
-	return rand()/(double(RAND_MAX)+1); 
-} 
-
+ImageObject * pImageObject[]= NULL;
+double* id_;
+int id = 0;
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {

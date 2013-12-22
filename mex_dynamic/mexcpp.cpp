@@ -35,6 +35,8 @@ using namespace std;
 
 extern void _main();
 
+int nobject_count=0;
+
 class MyData {
 
 	public:
@@ -57,10 +59,12 @@ MyData::MyData(int h, double v1, double v2)
 void MyData::display()
 {
 	#ifdef _WIN32
+		mexPrintf("Object Count = %g\n", nobject_count);
 		mexPrintf("Handle = %g\n", handle);
 		mexPrintf("Value1 = %g\n", val1);
 		mexPrintf("Value2 = %g\n\n", val2);
 	#else
+	  cout << "Object Count = " << nobject_count << "\n";
 	  cout << "Handle = " << handle << "\n";
 	  cout << "Value1 = " << val1 << "\n";
 	  cout << "Value2 = " << val2 << "\n\n";
@@ -74,6 +78,7 @@ static void create_object( int handle, double num1, double num2)
 {
 	MyData * pMyData=(MyData *)mxMalloc(sizeof(MyData));
 	MyData *d = new (pMyData) MyData(handle); // Create a  MyData object
+	nobject_count++;
 
 	d->set_data(num1,num2); // Set data members to incoming  values
 	d->display();           // Make sure the set_data() worked
