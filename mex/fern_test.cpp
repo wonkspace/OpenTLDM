@@ -331,7 +331,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	case 1:  {
  
 		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
-		mexPrintf("-----in mex init function1!!!1\n");
+		mexPrintf("-----in mex init function1 donver !!!1\n");
 	
 		id_ = mxGetPr(prhs[5]);
 		id = (int)(*id_);

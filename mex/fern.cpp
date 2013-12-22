@@ -69,13 +69,15 @@ struct fieldstruct {
 	vector<vector <int> > nN;
 	int BBOX_STEP;
 	int nBIT; // number of bits per feature
-} fields[] = {{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-              { 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-              { 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-              { 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 }
-/**/
-};
+} *fields; 
+/*fields[] = {
+	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
+	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
+	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
+	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 }
+};*/
 
+//struct fieldstruct * fields = malloc(sizeof(fieldstruct)*5);
 
 
 
@@ -289,6 +291,8 @@ double randdouble()
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+	fieldstruct * fields = (fieldstruct *)malloc(sizeof(fieldstruct)*4);
+	initialize_fields(4);
 	//mexPrintf("meeexxxxxxx\n");
 	if (nrhs == 0) {
 		//mexPrintf("CLEANUP: function(0);\n");
@@ -324,6 +328,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		fields[id].WEIGHT.clear();
 		fields[id].nP.clear();
 		fields[id].nN.clear();
+
+		//free(fields);
 		//mexPrintf("heeeeeeeere23232\n");
 	/*	if(id == 0)
 			fern1 = *tmp;
@@ -339,7 +345,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	case 1:  {
  
 		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
-		mexPrintf("-----in mex init function1!!!1\n");
+		mexPrintf("-----in mex init function1 donver2 !!!1\n");
 	
 		id_ = mxGetPr(prhs[5]);
 		id = (int)(*id_);
