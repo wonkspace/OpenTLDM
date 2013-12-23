@@ -1,31 +1,20 @@
 /*==========================================================
- * mexcpp.cpp - example in MATLAB External Interfaces
+ * mexdyn.cpp - example in MATLAB External Interfaces
+ *              and using dynamic objects
  *
  * Illustrates how to use some C++ language features in a MEX-file.
  * It makes use of member functions, constructors, destructors, and the
  * iostream.
  *
- * The routine simply defines a class, constructs a simple object,
- * and displays the initial values of the internal variables.  It
- * then sets the data members of the object based on the input given
- * to the MEX-file and displays the changed values.
- *
- * This file uses the extension .cpp.  Other common C++ extensions such
- * as .C, .cc, and .cxx are also supported.
- *
  * The calling syntax is:
  *
- *		mexcpp( num1, num2 )
+ *		mexdyn( call_type, <no_of_objects> )
  *
- * Limitations:
- * On Windows, this example uses mexPrintf instead cout.  Iostreams 
- * (such as cout) are not supported with MATLAB with all C++ compilers.
- *
- * This is a MEX-file for MATLAB.
- * Copyright 1984-2009 The MathWorks, Inc.
+ * Run the program with "matlab -nojvm -r testmex
  *
  *========================================================*/
-/* $Revision: 1.5.4.4 $ */
+// Created by Don Johnson <kodosaru@gmail.com> on Dec 22, 2013
+// Modified and augmented original example supplied by Mathworks
 
 #include <iostream>
 #include <stdlib.h>
@@ -83,6 +72,7 @@ void clearArrayOfObjects(){
 	  	cout << endl << "Cleared array" << endl;
 	}
 }
+
 void mexFunction(
 		 int          nlhs,
 		 mxArray      *[],
@@ -91,7 +81,7 @@ void mexFunction(
 		 )
 {
  	if (nlhs >= 1) {
-		mexErrMsgIdAndTxt("MATLAB:mexcpp:nargout", "MEXCPP requires no output argument.");
+		mexErrMsgIdAndTxt("MATLAB:mexdyn:nargout", "mexdyn requires no output argument.");
 	}
 
 	int call_type = mxGetScalar(prhs[0]);
@@ -99,7 +89,7 @@ void mexFunction(
 		// Create the objects
 		case 0: {
 			if (nrhs != 2) {
-				mexErrMsgIdAndTxt("MATLAB:mexcpp:nargin", "MEXCPP requires the call \
+				mexErrMsgIdAndTxt("MATLAB:mexdyn:nargin", "mexdyn requires the call \
 					type and number objects to be created as an input arguments.");
 			}
 			int ndesired_count = mxGetScalar(prhs[1]);
@@ -122,7 +112,7 @@ void mexFunction(
 		// Destroy the objects
 		case 1: {
 			if (nrhs != 1) {
-				mexErrMsgIdAndTxt("MATLAB:mexcpp:nargin", "MEXCPP requires the call type as an input argument.");
+				mexErrMsgIdAndTxt("MATLAB:mexdyn:nargin", "mexdyn requires the call type as an input argument.");
 			}
 			cout << "First object" << endl;
 			pMyData[0]->display();
