@@ -28,6 +28,7 @@
 /* $Revision: 1.5.4.4 $ */
 
 #include <iostream>
+#include <stdlib.h>
 #include <math.h>
 #include "mex.h"
 
@@ -35,21 +36,17 @@ using namespace std;
 
 extern void _main();
 
-int nobject_count=0;
-
 class MyData {
 
 	public:
 	  void display();
-	  void set_data(double v1, double v2);
-	  MyData(int handle=-1, double v1 = 0, double v2 = 0);
+	  MyData(int handle=-1, int v1 = 0, int v2 = 0);
 	  ~MyData() {}
 	private:
-	  int handle;
-	  double val1, val2;
+	  int handle, val1, val2;
 };
 
-MyData::MyData(int h, double v1, double v2)
+MyData::MyData(int h, int v1, int v2)
 {
 	handle = h;
   	val1 = v1;
@@ -59,34 +56,18 @@ MyData::MyData(int h, double v1, double v2)
 void MyData::display()
 {
 	#ifdef _WIN32
-		mexPrintf("Object Count = %g\n", nobject_count);
 		mexPrintf("Handle = %g\n", handle);
 		mexPrintf("Value1 = %g\n", val1);
 		mexPrintf("Value2 = %g\n\n", val2);
 	#else
-	  cout << "Object Count = " << nobject_count << "\n";
 	  cout << "Handle = " << handle << "\n";
 	  cout << "Value1 = " << val1 << "\n";
 	  cout << "Value2 = " << val2 << "\n\n";
 	#endif
 }
 
-void MyData::set_data(double v1, double v2) { val1 = v1; val2 = v2; }
-
-
-static void create_object( int handle, double num1, double num2)
-{
-	MyData * pMyData=(MyData *)mxMalloc(sizeof(MyData));
-	MyData *d = new (pMyData) MyData(handle); // Create a  MyData object
-	nobject_count++;
-
-	d->set_data(num1,num2); // Set data members to incoming  values
-	d->display();           // Make sure the set_data() worked
-
-	mxFree(pMyData);
-	flush(cout);
-	return;
-}
+MyData **pMyData;
+int nobject_count=0;
 
 void mexFunction(
 		 int          nlhs,
@@ -95,20 +76,47 @@ void mexFunction(
 		 const mxArray *prhs[]
 		 )
 {
-	int handle;
-	double      *vin1, *vin2;
-
-	/* Check for proper number of arguments */
-	if (nrhs != 3) {
-		mexErrMsgIdAndTxt("MATLAB:mexcpp:nargin", "MEXCPP requires two input arguments.");
-	} else if (nlhs >= 1) {
+ 	if (nlhs >= 1) {
 		mexErrMsgIdAndTxt("MATLAB:mexcpp:nargout", "MEXCPP requires no output argument.");
 	}
 
-	handle = mxGetScalar(prhs[0]);
-	vin1 = (double *) mxGetPr(prhs[1]);
-	vin2 = (double *) mxGetPr(prhs[2]);
+	int call_type = mxGetScalar(prhs[0]);
+	switch (call_type) {
+		// Create the objects
+		case 0: {
+			if (nrhs != 2) {
+				mexErrMsgIdAndTxt("MATLAB:mexcpp:nargin", "MEXCPP requires the call \
+					type and number objects to be created as an input arguments.");
+			}
+			int ndesired_count = mxGetScalar(prhs[1]);
+			pMyData = (MyData **)mxMalloc(sizeof(MyData *) * ndesired_count);
+			for(int i=0;i<ndesired_count;i++){
+				MyData *ptemp = (MyData *)mxMalloc(sizeof(MyData));
+				pMyData[i] = new (ptemp) MyData(i,rand(),rand()); // Create a  MyData object
+				pMyData[i]->display();
+				nobject_count++;
+			}
+			return;
+		}
 
-	create_object(handle, *vin1, *vin2);
+		// Destroy the objects
+		case 1: {
+			if (nrhs != 1) {
+				mexErrMsgIdAndTxt("MATLAB:mexcpp:nargin", "MEXCPP requires the call type as an input argument.");
+			}
+			cout << "First object" << endl;
+			pMyData[0]->display();
+			cout << endl;
+			cout << "Last object" << endl;
+			pMyData[nobject_count-1]->display();
+			mxFree(pMyData[0]);
+			for(int i=0;i<nobject_count;i++){
+				mxFree(pMyData[i]);
+			}
+			mxFree(pMyData);
+			return;
+		}
+	}
+
 	return;
 }
