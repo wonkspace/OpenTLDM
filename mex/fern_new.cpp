@@ -32,26 +32,28 @@ using namespace std;
 
 class ImageObject {
 	private:
-		static double thrN;
-		static int nBBOX;
-		static int mBBOX;
-		static int nTREES;
-		static int nFEAT;
-		static int nSCALE;
-		static int iHEIGHT;
-		static int iWIDTH;
-		static int *BBOX = NULL;
-		static int *OFF  = NULL;
-		static double *IIMG = 0;
-		static double *IIMG2 = 0;
-		static vector<vector <double> > WEIGHT;
-		static vector<vector <int> > nP;
-		static vector<vector <int> > nN;
-		static int BBOX_STEP;
-		static int nBIT; // number of bits per feature
+		int handle;
+		double thrN;
+		int nBBOX;
+		int mBBOX;
+		int nTREES;
+		int nFEAT;
+		int nSCALE;
+		int iHEIGHT;
+		int iWIDTH;
+		int *BBOX = NULL;
+		int *OFF  = NULL;
+		double *IIMG = 0;
+		double *IIMG2 = 0;
+		vector<vector <double> > WEIGHT;
+		vector<vector <int> > nP;
+		vector<vector <int> > nN;
+		int BBOX_STEP;
+		int nBIT; // number of bits per feature
 
 
-	ImageObject(int size) { // Contructor 
+	ImageObject(int h) { // Contructor 
+		handle = h;
 		thrN = 0.0;
 		nBBOX = 0;
 		mBBOX = 0;
@@ -173,6 +175,7 @@ class ImageObject {
 }
 
 ImageObject * pImageObject[]= NULL;
+int num_tracked = 0;
 double* id_;
 int id = 0;
 
@@ -221,10 +224,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		else
 			fern2 = *tmp;*/
 		//mexPrintf("donnnnee cleanup\n");
+
+		for (int i=0;i<num_tracked;i++){
+			mxFree(pImageObject[i]);
+		}
+
 		return;
 	}
 
-			 // INIT: function(1, img, bb, features, scales, id)
+			 // INIT: function(1, img, bb, features, scales, id, num_tracked)
 			 //                0  1    2   3         4
 			 // =============================================================================
 	case 1:  {
@@ -234,6 +242,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	
 		id_ = mxGetPr(prhs[5]);
 		id = (int)(*id_);
+
+		// Get the number of image objects to be created and create an data structure to hold their attributes 
+		num_tracked = mxGetPr(prhs[6]);
+		for (int i=0;i<num_tracked;i++){
+			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
+			pImageObject[i] = (ptemp) new ImageObject(i);
+		}
+
 		/*if(id == 0) {
 			mexPrintf("heeererererere\n");
 			tmp = &fern1;

@@ -30,6 +30,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
 #include "mex.h"
 
 using namespace std;
@@ -60,15 +61,28 @@ void MyData::display()
 		mexPrintf("Value1 = %g\n", val1);
 		mexPrintf("Value2 = %g\n\n", val2);
 	#else
-	  cout << "Handle = " << handle << "\n";
-	  cout << "Value1 = " << val1 << "\n";
-	  cout << "Value2 = " << val2 << "\n\n";
+	  cout << "Handle = " << handle << endl;
+	  cout << "Value1 = " << val1 << endl;
+	  cout << "Value2 = " << val2 << endl << endl;
 	#endif
 }
 
 MyData **pMyData;
 int nobject_count=0;
 
+void clearArrayOfObjects(){
+	if(pMyData != NULL) {
+		for(int i=0;i<nobject_count;i++){
+			if(pMyData[i] != NULL){
+				mxFree(pMyData[i]);
+	  			cout << "\rCleared object " << i << " in array" << flush;
+				usleep(5000);
+			}
+		}
+		mxFree(pMyData);
+	  	cout << endl << "Cleared array" << endl;
+	}
+}
 void mexFunction(
 		 int          nlhs,
 		 mxArray      *[],
@@ -90,12 +104,18 @@ void mexFunction(
 			}
 			int ndesired_count = mxGetScalar(prhs[1]);
 			pMyData = (MyData **)mxMalloc(sizeof(MyData *) * ndesired_count);
+			mexMakeMemoryPersistent(pMyData);
+			for(int i=0;i<ndesired_count;i++){
+				pMyData[i] = NULL;
+			}
 			for(int i=0;i<ndesired_count;i++){
 				MyData *ptemp = (MyData *)mxMalloc(sizeof(MyData));
+				mexMakeMemoryPersistent(ptemp);
 				pMyData[i] = new (ptemp) MyData(i,rand(),rand()); // Create a  MyData object
 				pMyData[i]->display();
 				nobject_count++;
 			}
+			mexAtExit(clearArrayOfObjects);
 			return;
 		}
 
@@ -109,11 +129,6 @@ void mexFunction(
 			cout << endl;
 			cout << "Last object" << endl;
 			pMyData[nobject_count-1]->display();
-			mxFree(pMyData[0]);
-			for(int i=0;i<nobject_count;i++){
-				mxFree(pMyData[i]);
-			}
-			mxFree(pMyData);
 			return;
 		}
 	}

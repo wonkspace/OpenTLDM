@@ -18,7 +18,7 @@
 function tld = tldInitDetector(tld)
 
 fern(0,tld.id);
-fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id);
+fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id,num_tracked);
 
 % Variance
 tld.pex    = [tld.pex tldGetPattern(tld.source.im0,tld.source.bb,tld.patchsize)];
