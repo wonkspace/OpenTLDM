@@ -21,20 +21,11 @@
 #include <math.h>
 #include <unistd.h>
 #include "mex.h"
+#include "mexdyn.hpp"
 
 using namespace std;
 
 extern void _main();
-
-class MyData {
-
-	public:
-	  void display();
-	  MyData(int handle=-1, int v1 = 0, int v2 = 0);
-	  ~MyData() {}
-	private:
-	  int handle, val1, val2;
-};
 
 MyData::MyData(int h, int v1, int v2)
 {
