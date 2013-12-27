@@ -15,6 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
+
 function tld = tldDisplay(varargin)
 % Plots results
 
@@ -23,6 +24,7 @@ function tld = tldDisplay(varargin)
 if varargin{1}==0
     
     tld = varargin{2};
+    n_object_tracked = varargin{3}
     
     % jorgeb - This part never executes because tldDisplay is never called
     % with 3 arguments. Might there be a case in the future?
@@ -73,7 +75,8 @@ else
     %tld3 = varargin{4};
     %i = tld.source.idx(varargin{5});
     tldarray = varargin{2};
-    num_tracked = size(tldarray,2);
+    n_object_tracked = varargin{3}
+    %n_object_tracked = size(tldarray,2);
     tld = tldarray(:,1);
     tld2 = tldarray(:,2);
     tld3 = tldarray(:,3);
@@ -165,7 +168,7 @@ else
             %bb_draw(bb,bb2,bb3,'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
             %bboxes = [bb bb2 bb3];
             %bb_draw(bboxes,'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
-            for k=1:num_tracked
+            for k=1:n_object_tracked
                bbi(i) = bb_rescale_relative(bb_square(tld.bb(:,i)),[1.2 1.2]);
                if tld.plot.confidence, bbi(i) = [bbi(i); tld.conf(i)]; end
                bboxes(k).bb = [tldarray(:,k).bb(:,i); tldarray(:,k).conf(i)];
@@ -186,7 +189,7 @@ else
             %bb2 = [bb2; tld2.conf(i)];
             %bb3 = [bb3; tld3.conf(i)];
             % jorgeb - The for loop replaces the individual bb's above
-            for k=1:num_tracked
+            for k=1:n_object_tracked
                bboxes(k).bb = [tldarray(:,k).bb(:,i); tldarray(:,k).conf(i)];
             end
 

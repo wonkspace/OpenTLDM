@@ -22,7 +22,7 @@ global tld2;
 global tld3;
 global tldarray;    % jorgeb - This is to replace tld, tld2, and tld3. ToDo - Rename afterward.
                     % jorgeb - Note reference to tld in other/init_workspace.m
-global num_tracked; % jorgeb - Total number of objects tracked
+global n_object_tracked; % jorgeb - Total number of objects tracked
 
 % jorgeb - ToDo - Pass tldarray to tldInitFrame
 % jorgeb - ToDo - Just as tldarray is to replace the tlds, optarray should

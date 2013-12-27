@@ -207,13 +207,13 @@ double randdouble()
 } 
 
 ImageObject **pImageObject= NULL;
-int nObjectTracked = 0;
+int num_tracked = 0;
 double* id_;
 int id = 0;
 
 void clearArrayOfObjects(){
 	if(pImageObject != NULL) {
-		for(int i=0;i<nObjectTracked;i++){
+		for(int i=0;i<num_tracked;i++){
 			if(pImageObject[i] != NULL){
 				mxFree(pImageObject[i]);
 	  			cout << "\rCleared object " << i << " in array" << flush;
@@ -252,21 +252,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		id_ = mxGetPr(prhs[1]);
 		id = (int)(*id_);
 
-		// Get the number of image objects to be created and create an data structure to hold their attributes 
-		nObjectTracked = mxGetScalar(prhs[2]);
-		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * nObjectTracked);
-		mexMakeMemoryPersistent(pImageObject);
-		for(int i=0;i<nObjectTracked;i++){
-			pImageObject[i] = NULL;
-		}
-
-		for (int i=0;i<nObjectTracked;i++){
-			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
-			mexMakeMemoryPersistent(ptemp);
-			pImageObject[i] = new (ptemp) ImageObject(i);
-		}
-		mexAtExit(clearArrayOfObjects);
-
 		srand(0); // fix state of random generator
 		pImageObject[id]->thrN = 0; pImageObject[id]->nBBOX = 0; pImageObject[id]->mBBOX = 0; pImageObject[id]->nTREES = 0; pImageObject[id]->nFEAT = 0; pImageObject[id]->nSCALE = 0; pImageObject[id]->iHEIGHT = 0; pImageObject[id]->iWIDTH = 0;
 		//mexPrintf("--------in mex cleanup function!!!!!\n");
@@ -288,7 +273,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		return;
 	}
 
-			 // INIT: function(1, img, bb, features, scales, id, nObjectTracked)
+			 // INIT: function(1, img, bb, features, scales, id, num_tracked)
 			 //                0  1    2   3         4
 			 // =============================================================================
 	case 1:  {
@@ -299,6 +284,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		id_ = mxGetPr(prhs[5]);
 		id = (int)(*id_);
 
+		// Get the number of image objects to be created and create an data structure to hold their attributes 
+		num_tracked = mxGetScalar(prhs[6]);
+		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * num_tracked);
+		mexMakeMemoryPersistent(pImageObject);
+		for(int i=0;i<num_tracked;i++){
+			pImageObject[i] = NULL;
+		}
+
+		for (int i=0;i<num_tracked;i++){
+			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
+			mexMakeMemoryPersistent(ptemp);
+			pImageObject[i] = new (ptemp) ImageObject(i);
+		}
+		mexAtExit(clearArrayOfObjects);
 
 		/*if(id == 0) {
 			mexPrintf("heeererererere\n");

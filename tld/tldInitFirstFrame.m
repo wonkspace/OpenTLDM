@@ -16,7 +16,7 @@
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
 % jorgeb - ToDo - tldInitFirstFrame needs to be passed tldarray, not tld.
-function source = tldInitFirstFrame(tld,source,min_win,num_tracked)
+function source = tldInitFirstFrame(tld,source,min_win,n_object_tracked)
 
 % load the first frame into memory
 source.im0  = img_get(source,source.idx(1));
@@ -35,7 +35,7 @@ if source.camera == 0 && exist([source.input '/init.txt'],'file')
 else
     % jorgeb - Modified call to bb_click. ToDo - Replace bbfixedX variables
     %[source.bb, source.bbfixed1, source.bbfixed2] = bb_click(tld,source.im0.input);
-    bounding_boxes = bb_click(tld,source.im0.input,num_tracked);
+    bounding_boxes = bb_click(tld,source.im0.input,n_object_tracked);
     source.bb = bounding_boxes(:,1);
     %source.bbfixed1 = bounding_boxes(:,2);
     %source.bbfixed2 = bounding_boxes(:,3);

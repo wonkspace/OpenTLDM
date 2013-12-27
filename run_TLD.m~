@@ -15,6 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
+global n_object_tracked;
+
 addpath(genpath('.')); init_workspace; 
 
 % jorgeb - Change second parameter of the struct to 0 for recorded video or 1 for webcam
@@ -45,9 +47,9 @@ opt.control         = struct('maxbbox',maxbbox,'update_detector',update_detector
 %profile on;
 
 inval=inputdlg('Number of Objects','No: ');
-n_object_tracked=str2num(inval{1});
+n_object_tracked=str2num(n_object_tracked{1});
 
-[bb,conf] = tldExample(opt,n_object_tracked);
+[bb,conf] = tldExample(opt);
 %profile off;
 %profile viewer;
 

@@ -15,7 +15,6 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-global n_object_tracked;
 
 function tld = tldDisplay(varargin)
 % Plots results
@@ -150,23 +149,33 @@ else
     linewidth = 2; % jorgeb disabled this conditional: if tld.valid(i) == 1, linewidth = 4; end;
     color = 'y'; %if tld.conf(i) > tld.model.thr_nn_valid, color = 'b'; end
     
-    bb = tld.bb(:,i);
-    bb2 = tld2.bb(:,i);
-    bb3 = tld3.bb(:,i);
+    %bb = tld.bb(:,i);
+    %bb2 = tld2.bb(:,i);
+    %bb3 = tld3.bb(:,i);
     % jorgeb - ToDo - Confirm we should switch on tld.plot.drawoutput. What
     % does it refer to?
     switch tld.plot.drawoutput
         
         case 1
+            % jorgeb - ToDo - Confirm if/when this case occurs
             % jorgeb - ToDo - Confirm rescale is required only with bb
-            bb = bb_rescale_relative(bb_square(bb),[1.2 1.2]);
-            if tld.plot.confidence, bb = [bb; tld.conf(i)]; end
+            % jorgeb - ToDo - Restructure to use bboxes(k).bb?
+            %bb = bb_rescale_relative(bb_square(tld.bb(:,i)),[1.2 1.2]);
+            %if tld.plot.confidence, bb(i) = [bb(i); tld.conf(i)]; end
             % jorgeb - Changed call to bb_draw
             %bb_draw(bb,bb2,bb3,'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
-            bboxes = [bb bb2 bb3];
-            bb_draw(bboxes,'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
+            %bboxes = [bb bb2 bb3];
+            %bb_draw(bboxes,'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
+            for k=1:n_object_tracked
+               bbi(i) = bb_rescale_relative(bb_square(tld.bb(:,i)),[1.2 1.2]);
+               if tld.plot.confidence, bbi(i) = [bbi(i); tld.conf(i)]; end
+               bboxes(k).bb = [tldarray(:,k).bb(:,i); tldarray(:,k).conf(i)];
+            end
+            bb_draw([bboxes.bb],'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
         case 2
-            cp = bb_center(bb);
+            % jorgeb - ToDo - Confirm if/when this case occurs
+            %cp = bb_center(bb);
+            cp = bb_center(tld.bb(:,i));
             % plot(cp(1),cp(2),'.r','markersize',20);
             if tld.plot.confidence, text(cp(1),cp(2),num2str(tld.conf(i))); end
             %bb_draw(bb,'linewidth',linewidth,'edgecolor',color,'curvature',[1 1]);
@@ -174,15 +183,20 @@ else
             % jorgeb replaced conditional with the three statements right
             % beneath.
             %if tld.plot.confidence, bb = [bb; tld.conf(i)]; end
-            bb = [bb; tld.conf(i)];
-            bb2 = [bb2; tld2.conf(i)];
-            bb3 = [bb3; tld3.conf(i)];
-            fprintf('n_object_tracked = %d\n', n_object_tracked);
+            %bb = [bb; tld.conf(i)];
+            %bb2 = [bb2; tld2.conf(i)];
+            %bb3 = [bb3; tld3.conf(i)];
+            % jorgeb - The for loop replaces the individual bb's above
+            for k=1:n_object_tracked
+               bboxes(k).bb = [tldarray(:,k).bb(:,i); tldarray(:,k).conf(i)];
+            end
 
             % jorgeb - Changed call to bb_draw
             %bb_draw(bb,bb2,bb3,'linewidth',linewidth,'edgecolor',color,'curvature',[0 0]);
-            bboxes = [bb bb2 bb3];
-            bb_draw(bboxes,'linewidth',linewidth,'edgecolor',color,'curvature',[0 0]);
+            %bboxes = [bb bb2 bb3];
+            % jorgeb - ToDo - Need to resolve difference between original
+            % bboxes array and new bboxes struct.
+            bb_draw([bboxes.bb],'linewidth',linewidth,'edgecolor',color,'curvature',[0 0]);
     end
     
     % Info

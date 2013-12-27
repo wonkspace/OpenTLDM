@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function tld = tldInit(opt,tld,n_object_tracked)
+function tld = tldInit(opt,tld)
 
 lk(0);
 
@@ -45,8 +45,8 @@ tld.nGrid     = size(tld.grid,2);
 tld.features  = tldGenerateFeatures(tld.model.num_trees,tld.model.num_features,0);
 
 % Initialize Detector
-fern(0, tld.id,n_object_tracked); % cleanup
-fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id); % allocate structures
+fern(0, tld.id); % cleanup
+fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id,num_tracked); % allocate structures
 % Temporal structures
 tld.tmp.conf = zeros(1,tld.nGrid);
 tld.tmp.patt = zeros(tld.model.num_trees,tld.nGrid);
