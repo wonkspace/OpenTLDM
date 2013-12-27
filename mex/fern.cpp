@@ -20,209 +20,126 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <iostream>
 #include "tld.h"
-#ifdef _CHAR16T
-#define CHAR16_T
-#endif
 #include "mex.h" 
+
+#ifdef _CHAR16T
+	#define CHAR16_T
+#endif
+#define sub2idx(row,col,height) ((int) (floor((row)+0.5) + floor((col)+0.5)*(height)))
+double randdouble(); 
+
 using namespace std;
-//extern void _main();
-/*
-double* id;
-double thrN;
-int nBBOX;
-int mBBOX;
-int nTREES;
-int nFEAT;
-int nSCALE;
-int iHEIGHT;
-int iWIDTH;
-int *BBOX = NULL;
-int *OFF  = NULL;
-double *IIMG = 0;
-double *IIMG2 = 0;
-vector<vector <double> > WEIGHT;
-vector<vector <int> > nP;
-vector<vector <int> > nN;
-int BBOX_STEP = 7;
-int nBIT = 1; // number of bits per feature
-*/
-double* id_;
-static int id = 0;
-vector<vector<double> > initw;
-vector<vector<int> > initn;
-struct fieldstruct {
-	double thrN;
-	int nBBOX;
-	int mBBOX;
-	int nTREES;
-	int nFEAT;
-	int nSCALE;
-	int iHEIGHT;
-	int iWIDTH;
-	int *BBOX;
-	int *OFF;
-	double *IIMG;
-	double *IIMG2;
-	vector<vector <double> > WEIGHT;
-	vector<vector <int> > nP;
-	vector<vector <int> > nN;
-	int BBOX_STEP;
-	int nBIT; // number of bits per feature
-} fields[] = {
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, 0, initw, initn, initn, 7, 1 }
+
+class ImageObject {
+public:
+  // Data
+  int handle;
+  double thrN;
+  int nBBOX;
+  int mBBOX;
+  int nTREES;
+  int nFEAT;
+  int nSCALE;
+  int iHEIGHT;
+  int iWIDTH;
+  int *BBOX;
+  int *OFF;
+  double *IIMG;
+  double *IIMG2;
+  vector<vector <double> > WEIGHT;
+  vector<vector <int> > nP;
+  vector<vector <int> > nN;
+  int BBOX_STEP;
+  int nBIT; // number of bits per feature
+		
+  // Methods	
+  ImageObject(int handle);
+  ~ImageObject();	
+  void display();
+  void update(double *x, int C, int N);
+  double measure_forest(double *idx);
+  int measure_tree_offset(unsigned char *img, int idx_bbox, int idx_tree);
+  double measure_bbox_offset(unsigned char *blur, int idx_bbox, double minVar, double *tPatt);
+  int* create_offsets(double *scale0, double *x0);
+  int* create_offsets_bbox(double *bb0);
+
 };
 
-//struct fieldstruct * fields = malloc(sizeof(fieldstruct)*5);
-
-
-
-//static int size = 4;              // jorgeb - ToDo - Remove hard-wired value
-//fieldstruct * fields = new fieldstruct[size];  // jorgeb
-
-#define sub2idx(row,col,height) ((int) (floor((row)+0.5) + floor((col)+0.5)*(height)))
-
-
-//Fernstruct fern2;
-//Fernstruct* tmp;
-/*
-struct list_element {
-	Fernstruct* fern;
-	list_element* next;
-} *list_head;
-
-Fernstruct* fern;
-*/
-
-//vector<vector <double>> curWEIGHT;
-/*
-// append a fern to the end of the list
-void list_append(Fernstruct* newfern) {
-	//if(newfern == NULL)
-	//	throw mwException("ERROR: Tried to append empty element to linked list");
-	list_element* new_element = (list_element*)malloc(sizeof(list_element)); // allocate memory
-
-	new_element->fern = newfern; // put the fern in the list element
-	mexPrintf("the fern being added to the list has an id of %f\n", new_element->fern->id);
-	new_element->next = NULL;
-	list_element* iter = list_head; // iterator 
-	if(iter == NULL)
-		list_head = new_element;
-	else {
-		while(iter->next != NULL) {
-			//mexPrintf("found non-null item!!!\n");
-			iter = iter->next;
-		}
-		iter->next = new_element;
-	}
+ImageObject::ImageObject(int h) { // Constructor 
+	handle = h;
+	thrN = 0.0;
+	nBBOX = 0;
+	mBBOX = 0;
+	nTREES = 0;
+	nFEAT = 0;
+	nSCALE = 0;
+	iHEIGHT = 0;
+	iWIDTH = 0;
+	BBOX = NULL;
+	OFF = NULL;
+	IIMG = 0;
+	IIMG2 = 0;
+	BBOX_STEP = 7;
+	nBIT = 1;
 }
 
-// find an element, returns null if not found
-Fernstruct* list_find(double id) {
-	list_element* iter = list_head; // iterator
-	while(iter != NULL) { 
-		//		mexPrintf("found something!!!! it has id of %f, looking for id of %f\n", iter->fern->id, id);
-		if(iter->fern->id == id) { 
-		//	mexPrintf("found the list element!\n");
-			return iter->fern;
-		}
-		iter = iter->next;
-	}
-	mexPrintf("didn't find the list element1!!!!\n");
-	return NULL;
-}
-*/
-/*
-fieldstruct * initialize_fields(fieldstruct* fields, int size) {   // jorgeb
-    for (int i=0; i<size; i++) {
-    	fields[i].thrN = 0.0;
-    	fields[i].nBBOX = 0;
-    	fields[i].mBBOX = 0;
-    	fields[i].nTREES = 0;
-    	fields[i].nFEAT = 0;
-    	fields[i].nSCALE = 0;
-    	fields[i].iHEIGHT = 0;
-    	fields[i].iWIDTH = 0;
-    	fields[i].BBOX = NULL;
-    	fields[i].OFF = NULL;
-    	fields[i].IIMG = 0;
-    	fields[i].IIMG2 = 0;
-    	fields[i].WEIGHT = initw;
-    	fields[i].nP = initn;
-    	fields[i].nN = initn;
-    	fields[i].BBOX_STEP = 7;
-    	fields[i].nBIT = 1;
-    }
-return fields;
-}
-*/
+ImageObject::~ImageObject(){}; // Destructor
 
-//static int size = 4;                           // jorgeb - hardwired
-//fieldstruct * fields = new fieldstruct[size];  // jorgeb
-//fields = initialize_fields(fields, size);      // jorgeb - ToDo - Remove hardwired value
 
-void initialize_fields(int size) {   //jorgeb
-    for (int i=0; i<size; i++) {
-    	fields[i].thrN = 0.0;
-    	fields[i].nBBOX = 0;
-    	fields[i].mBBOX = 0;
-    	fields[i].nTREES = 0;
-    	fields[i].nFEAT = 0;
-    	fields[i].nSCALE = 0;
-    	fields[i].iHEIGHT = 0;
-    	fields[i].iWIDTH = 0;
-    	fields[i].BBOX = NULL;
-    	fields[i].OFF = NULL;
-    	fields[i].IIMG = 0;
-    	fields[i].IIMG2 = 0;
-    	fields[i].WEIGHT = initw;
-    	fields[i].nP = initn;
-    	fields[i].nN = initn;
-    	fields[i].BBOX_STEP = 7;
-    	fields[i].nBIT = 1;
-    }
+void ImageObject::display()
+{
+	#ifdef _WIN32
+		/* TODO */
+	#else
+		cout << "handle = " << handle << endl; 
+		cout << "thrN = " << thrN << endl;
+		cout << "nBBOX = " << nBBOX << endl;
+		cout << "mBBOX = " << mBBOX << endl;
+		cout << "nTREES = " << nTREES << endl;
+		cout << "nFEAT = " << nFEAT << endl;
+		cout << "nSCALE = " << nSCALE << endl;
+		cout << "iHEIGHT = " << iHEIGHT << endl;
+		cout << "iWIDTH = " << iWIDTH << endl;
+		cout << "BBOX_STEP = " << BBOX_STEP << endl;
+		cout << "nBIT = " << nBIT << endl << endl;
+
+	#endif
 }
 
-//static int size = 4;                           // jorgeb - hardwired
-//fieldstruct * fields = new fieldstruct[size];  // jorgeb
-//fields = initialize_fields(fields, size);      // jorgeb - ToDo - Remove hardwired value
 
+void ImageObject::update(double *x, int C, int N) {
+	for (int i = 0; i < nTREES; i++) {
 
-void update(double *x, int C, int N) {
-//	mexPrintf("here1\n");
-	for (int i = 0; i < fields[id].nTREES; i++) {
 		int idx = (int) x[i];
 
-		(C==1) ? (fields[id].nP[i][idx] += N) : (fields[id].nN[i][idx] += N);
+		(C==1) ? nP[i][idx] += N : nN[i][idx] += N;
 
-		if (fields[id].nP[i][idx]==0) {
-			fields[id].WEIGHT[i][idx] = 0;
+		if (nP[i][idx]==0) {
+			WEIGHT[i][idx] = 0;
 		} else {
-			fields[id].WEIGHT[i][idx] = ((double) (fields[id].nP[i][idx])) / (fields[id].nP[i][idx] + fields[id].nN[i][idx]);
+			WEIGHT[i][idx] = ((double) (nP[i][idx])) / (nP[i][idx] + nN[i][idx]);
 		}
 	}
-	////mexPrintf("here2\n");
 }
 
 
-double measure_forest(double *idx) {
+double ImageObject::measure_forest(double *idx) {
 	double votes = 0;
-	for (int i = 0; i < fields[id].nTREES; i++) { 
-		votes += fields[id].WEIGHT[i][idx[i]];
+	for (int i = 0; i < nTREES; i++) { 
+		votes += WEIGHT[i][idx[i]];
 	}
 	return votes;
 }
 
 
-int measure_tree_offset(unsigned char *img, int idx_bbox, int idx_tree) {
-	
+int ImageObject::measure_tree_offset(unsigned char *img, int idx_bbox, int idx_tree) {
+
 	int index = 0;
-	int *bbox = fields[id].BBOX + idx_bbox*(fields[id].BBOX_STEP);
-	int *off = (fields[id].OFF) + bbox[5] + idx_tree*2*(fields[id].nFEAT);
-	for (int i=0; i<(fields[id].nFEAT); i++) {
+	int *bbox = BBOX + idx_bbox*BBOX_STEP;
+	int *off = OFF + bbox[5] + idx_tree*2*nFEAT;
+	for (int i=0; i<nFEAT; i++) {
 		index<<=1; 
 		int fp0 = img[off[0]+bbox[0]];
 		int fp1 = img[off[1]+bbox[0]];
@@ -233,50 +150,52 @@ int measure_tree_offset(unsigned char *img, int idx_bbox, int idx_tree) {
 }
 
 
-double measure_bbox_offset(unsigned char *blur, int idx_bbox, double minVar, double *tPatt) {
+double ImageObject::measure_bbox_offset(unsigned char *blur, int idx_bbox, double minVar, double *tPatt) {
+
 	double conf = 0.0;
-	double bboxvar = bbox_var_offset(fields[id].IIMG,fields[id].IIMG2,(fields[id].BBOX)+idx_bbox*(fields[id].BBOX_STEP));
+	double bboxvar = bbox_var_offset(IIMG,IIMG2,BBOX+idx_bbox*BBOX_STEP);
 	if (bboxvar < minVar) {	return conf; }
-	for (int i = 0; i < (fields[id].nTREES); i++) { 
+
+	for (int i = 0; i < nTREES; i++) { 
 		int idx = measure_tree_offset(blur,idx_bbox,i);
 		tPatt[i] = idx;
-		conf += fields[id].WEIGHT[i][idx];
+		conf += WEIGHT[i][idx];
 	}
 	return conf;
 }
 
-int* create_offsets(double *scale0, double *x0) {
+int* ImageObject::create_offsets(double *scale0, double *x0) {
 
-	int *offsets = (int*) malloc(fields[id].nSCALE*fields[id].nTREES*fields[id].nFEAT*2*sizeof(int));
+	int *offsets = (int*) malloc(nSCALE*nTREES*nFEAT*2*sizeof(int));
 	int *off = offsets;
 
-	for (int k = 0; k < fields[id].nSCALE; k++){
+	for (int k = 0; k < nSCALE; k++){
 		double *scale = scale0+2*k;
-		for (int i = 0; i < fields[id].nTREES; i++) {
-			for (int j = 0; j < fields[id].nFEAT; j++) {
-				double *x  = x0 +4*j + (4*fields[id].nFEAT)*i;
-				*off++ = sub2idx((scale[0]-1)*x[1],(scale[1]-1)*x[0],fields[id].iHEIGHT);
-				*off++ = sub2idx((scale[0]-1)*x[3],(scale[1]-1)*x[2],fields[id].iHEIGHT);
+		for (int i = 0; i < nTREES; i++) {
+			for (int j = 0; j < nFEAT; j++) {
+				double *x  = x0 +4*j + (4*nFEAT)*i;
+				*off++ = sub2idx((scale[0]-1)*x[1],(scale[1]-1)*x[0],iHEIGHT);
+				*off++ = sub2idx((scale[0]-1)*x[3],(scale[1]-1)*x[2],iHEIGHT);
 			}
 		}
 	}
 	return offsets;
 }
 
-int* create_offsets_bbox(double *bb0) {
+int* ImageObject::create_offsets_bbox(double *bb0) {
 
-	int *offsets = (int*) malloc(fields[id].BBOX_STEP*fields[id].nBBOX*sizeof(int));
+	int *offsets = (int*) malloc(BBOX_STEP*nBBOX*sizeof(int));
 	int *off = offsets;
 
-	for (int i = 0; i < fields[id].nBBOX; i++) {
-		double *bb = bb0+fields[id].mBBOX*i;
-		*off++ = sub2idx(bb[1]-1,bb[0]-1,fields[id].iHEIGHT);
-		*off++ = sub2idx(bb[3]-1,bb[0]-1,fields[id].iHEIGHT);
-		*off++ = sub2idx(bb[1]-1,bb[2]-1,fields[id].iHEIGHT);
-		*off++ = sub2idx(bb[3]-1,bb[2]-1,fields[id].iHEIGHT);
+	for (int i = 0; i < nBBOX; i++) {
+		double *bb = bb0+mBBOX*i;
+		*off++ = sub2idx(bb[1]-1,bb[0]-1,iHEIGHT);
+		*off++ = sub2idx(bb[3]-1,bb[0]-1,iHEIGHT);
+		*off++ = sub2idx(bb[1]-1,bb[2]-1,iHEIGHT);
+		*off++ = sub2idx(bb[3]-1,bb[2]-1,iHEIGHT);
 		*off++ = (int) ((bb[2]-bb[0])*(bb[3]-bb[1]));
-		*off++ = (int) (bb[4]-1)*2*fields[id].nFEAT*fields[id].nTREES; // pointer to features for this scale
-		*off++ = bb[5]; // number of left-right bboxes, will be used for searching neighbors
+		*off++ = (int) (bb[4]-1)*2*nFEAT*nTREES; // pointer to features for this scale
+		*off++ = bb[5]; // number of left-right bboxes, will be used for searching neighbours
 	}
 	return offsets;
 }
@@ -287,6 +206,24 @@ double randdouble()
 	return rand()/(double(RAND_MAX)+1); 
 } 
 
+ImageObject **pImageObject= NULL;
+int num_tracked = 0;
+double* id_;
+int id = 0;
+
+void clearArrayOfObjects(){
+	if(pImageObject != NULL) {
+		for(int i=0;i<num_tracked;i++){
+			if(pImageObject[i] != NULL){
+				mxFree(pImageObject[i]);
+	  			cout << "\rCleared object " << i << " in array" << flush;
+				usleep(5000);
+			}
+		}
+		mxFree(pImageObject);
+	  	cout << endl << "Cleared array" << endl;
+	}
+}
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -316,15 +253,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		id = (int)(*id_);
 
 		srand(0); // fix state of random generator
-		fields[id].thrN = 0; fields[id].nBBOX = 0; fields[id].mBBOX = 0; fields[id].nTREES = 0; fields[id].nFEAT = 0; fields[id].nSCALE = 0; fields[id].iHEIGHT = 0; fields[id].iWIDTH = 0;
+		pImageObject[id]->thrN = 0; pImageObject[id]->nBBOX = 0; pImageObject[id]->mBBOX = 0; pImageObject[id]->nTREES = 0; pImageObject[id]->nFEAT = 0; pImageObject[id]->nSCALE = 0; pImageObject[id]->iHEIGHT = 0; pImageObject[id]->iWIDTH = 0;
 		//mexPrintf("--------in mex cleanup function!!!!!\n");
-		free(fields[id].BBOX); fields[id].BBOX = 0;
-		free(fields[id].OFF); fields[id].OFF = 0;
-		free(fields[id].IIMG); fields[id].IIMG = 0;
-		free(fields[id].IIMG2); fields[id].IIMG2 = 0;
-		fields[id].WEIGHT.clear();
-		fields[id].nP.clear();
-		fields[id].nN.clear();
+		free(pImageObject[id]->BBOX); pImageObject[id]->BBOX = 0;
+		free(pImageObject[id]->OFF); pImageObject[id]->OFF = 0;
+		free(pImageObject[id]->IIMG); pImageObject[id]->IIMG = 0;
+		free(pImageObject[id]->IIMG2); pImageObject[id]->IIMG2 = 0;
+		pImageObject[id]->WEIGHT.clear();
+		pImageObject[id]->nP.clear();
+		pImageObject[id]->nN.clear();
 
 		//free(fields);
 		//mexPrintf("heeeeeeeere23232\n");
@@ -332,11 +269,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			fern1 = *tmp;
 		else
 			fern2 = *tmp;*/
-		//mexPrintf("donnnnee cleanup\n");
+
 		return;
 	}
 
-			 // INIT: function(1, img, bb, features, scales, id)
+			 // INIT: function(1, img, bb, features, scales, id, num_tracked)
 			 //                0  1    2   3         4
 			 // =============================================================================
 	case 1:  {
@@ -346,6 +283,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	
 		id_ = mxGetPr(prhs[5]);
 		id = (int)(*id_);
+
+		// Get the number of image objects to be created and create an data structure to hold their attributes 
+		num_tracked = mxGetScalar(prhs[6]);
+		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * num_tracked);
+		mexMakeMemoryPersistent(pImageObject);
+		for(int i=0;i<num_tracked;i++){
+			pImageObject[i] = NULL;
+		}
+
+		for (int i=0;i<num_tracked;i++){
+			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
+			mexMakeMemoryPersistent(ptemp);
+			pImageObject[i] = new (ptemp) ImageObject(i);
+		}
+		mexAtExit(clearArrayOfObjects);
+
 		/*if(id == 0) {
 			mexPrintf("heeererererere\n");
 			tmp = &fern1;
@@ -354,41 +307,41 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		else
 			tmp = &fern2;*/
 		//mexPrintf("1\n");	
-		if (fields[id].BBOX!=NULL) { mexPrintf("fern: already initialized.\n"); return; }	
+		if (pImageObject[id]->BBOX!=NULL) { mexPrintf("fern: already initialized.\n"); return; }	
 		//mexPrintf("2\n");
 		//mexPrintf("id: %d\n", id);
-		fields[id].iHEIGHT    = mxGetM(prhs[1]);
+		pImageObject[id]->iHEIGHT    = mxGetM(prhs[1]);
 		//mexPrintf("here1\n");
-		fields[id].iWIDTH     = mxGetN(prhs[1]);
-		fields[id].nTREES     = mxGetN(mxGetField(prhs[3],0,"x"));
-		fields[id].nFEAT      = mxGetM(mxGetField(prhs[3],0,"x")) / 4; // feature has 2 points: x1,y1,x2,y2
+		pImageObject[id]->iWIDTH     = mxGetN(prhs[1]);
+		pImageObject[id]->nTREES     = mxGetN(mxGetField(prhs[3],0,"x"));
+		pImageObject[id]->nFEAT      = mxGetM(mxGetField(prhs[3],0,"x")) / 4; // feature has 2 points: x1,y1,x2,y2
 		//mexPrintf("here2\n");
-		fields[id].thrN       = 0.5 * fields[id].nTREES;
-		fields[id].nSCALE     = mxGetN(prhs[4]);
+		pImageObject[id]->thrN       = 0.5 * pImageObject[id]->nTREES;
+		pImageObject[id]->nSCALE     = mxGetN(prhs[4]);
 		
-		fields[id].IIMG       = (double*) malloc(fields[id].iHEIGHT*fields[id].iWIDTH*sizeof(double));
-		fields[id].IIMG2      = (double*) malloc(fields[id].iHEIGHT*fields[id].iWIDTH*sizeof(double));
+		pImageObject[id]->IIMG       = (double*) malloc(pImageObject[id]->iHEIGHT*pImageObject[id]->iWIDTH*sizeof(double));
+		pImageObject[id]->IIMG2      = (double*) malloc(pImageObject[id]->iHEIGHT*pImageObject[id]->iWIDTH*sizeof(double));
 		//mexPrintf("here2\n");
 		// BBOX
-		fields[id].mBBOX      = mxGetM(prhs[2]); 
-		fields[id].nBBOX      = mxGetN(prhs[2]);
-		//mexPrintf("nBBox = %d..........", fields[id].nBBOX);
-		fields[id].BBOX	   = create_offsets_bbox(mxGetPr(prhs[2]));
+		pImageObject[id]->mBBOX      = mxGetM(prhs[2]); 
+		pImageObject[id]->nBBOX      = mxGetN(prhs[2]);
+		//mexPrintf("nBBox = %d..........", pImageObject[id]->nBBOX);
+		pImageObject[id]->BBOX	   = pImageObject[id]->create_offsets_bbox(mxGetPr(prhs[2]));
 		double *x  = mxGetPr(mxGetField(prhs[3],0,"x"));
 		double *s  = mxGetPr(prhs[4]);
-		fields[id].OFF		   = create_offsets(s,x);
+		pImageObject[id]->OFF		   = pImageObject[id]->create_offsets(s,x);
 
-		for (int i = 0; i<fields[id].nTREES; i++) {
-			fields[id].WEIGHT.push_back(vector<double>(pow(2.0,fields[id].nBIT*fields[id].nFEAT), 0));
-			fields[id].nP.push_back(vector<int>(pow(2.0,fields[id].nBIT*fields[id].nFEAT), 0));
-			fields[id].nN.push_back(vector<int>(pow(2.0,fields[id].nBIT*fields[id].nFEAT), 0));
+		for (int i = 0; i<pImageObject[id]->nTREES; i++) {
+			pImageObject[id]->WEIGHT.push_back(vector<double>(pow(2.0,pImageObject[id]->nBIT*pImageObject[id]->nFEAT), 0));
+			pImageObject[id]->nP.push_back(vector<int>(pow(2.0,pImageObject[id]->nBIT*pImageObject[id]->nFEAT), 0));
+			pImageObject[id]->nN.push_back(vector<int>(pow(2.0,pImageObject[id]->nBIT*pImageObject[id]->nFEAT), 0));
 		}
 
-		for (int i = 0; i<fields[id].nTREES; i++) {
-			for (int j = 0; j < fields[id].WEIGHT[i].size(); j++) {
-				fields[id].WEIGHT[i].at(j) = 0;
-				fields[id].nP[i].at(j) = 0;
-				fields[id].nN[i].at(j) = 0;
+		for (int i = 0; i<pImageObject[id]->nTREES; i++) {
+			for (int j = 0; j < pImageObject[id]->WEIGHT[i].size(); j++) {
+				pImageObject[id]->WEIGHT[i].at(j) = 0;
+				pImageObject[id]->nP[i].at(j) = 0;
+				pImageObject[id]->nN[i].at(j) = 0;
 			}
 		}
 	/*	if(id == 0)
@@ -416,7 +369,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		double *X     = mxGetPr(prhs[1]);
 		int numX      = mxGetN(prhs[1]);
 		double *Y     = mxGetPr(prhs[2]);
-		double thrP   = *mxGetPr(prhs[3]) * fields[id].nTREES;
+		double thrP   = *mxGetPr(prhs[3]) * pImageObject[id]->nTREES;
 		int bootstrap = (int) *mxGetPr(prhs[4]);
 
 
@@ -428,23 +381,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 					for (int k = 0; k < 10; k++) {
 					
 						int I = k*step + i;
-						double *x = X+(fields[id].nTREES)*I;
+						double *x = X+(pImageObject[id]->nTREES)*I;
 						//mexPrintf("about to call measure_forest.....\n");
 						if (Y[I] == 1) {
-							if (measure_forest(x) <= thrP) {
+							if (pImageObject[id]->measure_forest(x) <= thrP) {
 								//mexPrintf("about to call update function....\n");
-								update(x,1,1);
+								pImageObject[id]->update(x,1,1);
 								//mexPrintf("just finished calling the update function\n");
 							}
 						} else {
-							if (measure_forest(x) >= fields[id].thrN) {
+							if (pImageObject[id]->measure_forest(x) >= pImageObject[id]->thrN) {
 								//mexPrintf("about to call update function\n");
-								update(x,0,1);
+								pImageObject[id]->update(x,0,1);
 								//mexPrintf("finished calling the update function\n");
 							}
 						}
 						static int count = 0;
-						//mexPrintf("update %d\n", count++);
+						//mexPrintf("pImageObject[id]->measure %d\n", count++);
 					}
 				}
 			}
@@ -461,11 +414,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 //					int I = idx[i]-1;
 //					double *x = X+(fern.nTREES)*I;
 //					if (Y[I] == 1) {
-//						if (measure_forest(x, &fern) <= thrP)
-//							update(x,1,1,&fern);
+//						if (pImageObject[id]->measure_forest(x, &fern) <= thrP)
+//							pImageObject[id]->measure(x,1,1,&fern);
 //					} else {
-//						if (measure_forest(x, &fern) >= thrN)
-//							update(x,0,1,&fern);
+//						if (pImageObject[id]->measure_forest(x, &fern) >= thrN)
+//							pImageObject[id]->measure(x,0,1,&fern);
 //					}
 //				}
 //			}
@@ -478,7 +431,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			double *resp0 = mxGetPr(plhs[0]);
 
 			for (int i = 0; i < numX; i++) {
-				*resp0++ = measure_forest((X+(fields[id].nTREES)*i));
+				*resp0++ = pImageObject[id]->measure_forest((X+(pImageObject[id]->nTREES)*i));
 			}
 		}
 	/*	
@@ -490,7 +443,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		//mexPrintf("done with mex update case!!!!!!!!!!!!\n");
 //mexPrintf("made it to the end of the mex function's update case!!!!!\n");
 		return;
-			}
+	}
 
 	// EVALUATE PATTERNS
 	// =============================================================================
@@ -514,7 +467,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		double *resp0 = mxGetPr(plhs[0]);
 
 		for (int i = 0; i < numX; i++) {
-			*resp0++ = measure_forest((X+(fields[id].nTREES)*i));
+			*resp0++ = pImageObject[id]->measure_forest((X+(pImageObject[id]->nTREES)*i));
 		}
 /*		
 		if(id == 0)
@@ -523,7 +476,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			fern2 = *tmp;*/
 		//mexPrintf("done with evaluate patterns!!!!\n");
 		return;
-			}
+	}
 
 			// DETECT: TOTAL RECALL
 			// =============================================================================
@@ -543,16 +496,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 //		mexPrintf("Detect!!!\n");
 		// Pointer to preallocated output matrixes
-		double *conf = mxGetPr(prhs[4]); if ( mxGetN(prhs[4]) != fields[id].nBBOX) { mexPrintf("1Wrong input.\n"); return; }
-		double *patt = mxGetPr(prhs[5]); if ( mxGetN(prhs[5]) != fields[id].nBBOX) { mexPrintf("2Wrong input.\n"); return; }
-		for (int i = 0; i < fields[id].nBBOX; i++) { conf[i] = -1; }
+		double *conf = mxGetPr(prhs[4]); if ( mxGetN(prhs[4]) != pImageObject[id]->nBBOX) { mexPrintf("1Wrong input.\n"); return; }
+		double *patt = mxGetPr(prhs[5]); if ( mxGetN(prhs[5]) != pImageObject[id]->nBBOX) { mexPrintf("2Wrong input.\n"); return; }
+		for (int i = 0; i < pImageObject[id]->nBBOX; i++) { conf[i] = -1; }
 
 		// Setup sampling of the BBox
 		double probability = *mxGetPr(prhs[2]);
 
-		double nTest  = fields[id].nBBOX * probability; if (nTest <= 0) return;
-		if (nTest > fields[id].nBBOX) nTest = fields[id].nBBOX;
-		double pStep  = (double) (fields[id].nBBOX) / nTest;
+		double nTest  = pImageObject[id]->nBBOX * probability; if (nTest <= 0) return;
+		if (nTest > pImageObject[id]->nBBOX) nTest = pImageObject[id]->nBBOX;
+		double pStep  = (double) (pImageObject[id]->nBBOX) / nTest;
 		double pState = randdouble() * pStep;
 
 		// Input images
@@ -560,11 +513,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		unsigned char *blur  = (unsigned char*) mxGetPr(mxGetField(prhs[1],0,"blur"));
 
 		// Integral images
-		iimg(input,fields[id].IIMG,fields[id].iHEIGHT,fields[id].iWIDTH);
-		iimg2(input,fields[id].IIMG2,fields[id].iHEIGHT,fields[id].iWIDTH);
+		iimg(input,pImageObject[id]->IIMG,pImageObject[id]->iHEIGHT,pImageObject[id]->iWIDTH);
+		iimg2(input,pImageObject[id]->IIMG2,pImageObject[id]->iHEIGHT,pImageObject[id]->iWIDTH);
 
 		// log: 0 - not visited, 1 - visited
-		int *log = (int*) calloc(fields[id].nBBOX,sizeof(int));
+		int *log = (int*) calloc(pImageObject[id]->nBBOX,sizeof(int));
 
 		// variance
 		double minVar = *mxGetPr(prhs[3]);
@@ -579,12 +532,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			// Get index of bbox
 			I = (int) floor(pState);
 			pState += pStep;
-			if (pState >= fields[id].nBBOX) { break; }
+			if (pState >= pImageObject[id]->nBBOX) { break; }
 
 			// measure bbox
 			log[I] = 1;
-			double *tPatt = patt + fields[id].nTREES*I;
-			conf[I] = measure_bbox_offset(blur,I,minVar,tPatt);
+			double *tPatt = patt + pImageObject[id]->nTREES*I;
+			conf[I] = pImageObject[id]->measure_bbox_offset(blur,I,minVar,tPatt);
 
 			// total recall
 			
@@ -644,12 +597,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		double minVar = *mxGetPr(prhs[3]);
 		//mexPrintf("about to grab a field from the static array of structs\n");
 		if (minVar > 0) {
-			iimg(input,fields[id].IIMG,fields[id].iHEIGHT,fields[id].iWIDTH);
-			iimg2(input,fields[id].IIMG2,fields[id].iHEIGHT,fields[id].iWIDTH);
+			iimg(input,pImageObject[id]->IIMG,pImageObject[id]->iHEIGHT,pImageObject[id]->iWIDTH);
+			iimg2(input,pImageObject[id]->IIMG2,pImageObject[id]->iHEIGHT,pImageObject[id]->iWIDTH);
 		}
 		//mexPrintf("successfully grabbed field\n");
 		// output patterns
-		plhs[0] = mxCreateDoubleMatrix(fields[id].nTREES,numIdx,mxREAL);
+		plhs[0] = mxCreateDoubleMatrix(pImageObject[id]->nTREES,numIdx,mxREAL);
 		double *patt = mxGetPr(plhs[0]);
 
 		plhs[1] = mxCreateDoubleMatrix(1,numIdx,mxREAL);
@@ -658,13 +611,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		for (int j = 0; j < numIdx; j++) {
 
 			if (minVar > 0) {
-				double bboxvar = bbox_var_offset(fields[id].IIMG,fields[id].IIMG2,(fields[id].BBOX)+j*(fields[id].BBOX_STEP));
+				double bboxvar = bbox_var_offset(pImageObject[id]->IIMG,pImageObject[id]->IIMG2,(pImageObject[id]->BBOX)+j*(pImageObject[id]->BBOX_STEP));
 				if (bboxvar < minVar) {	continue; }
 			}
 			status[j] = 1;
-			double *tPatt = patt + j*(fields[id].nTREES);
-			for (int i = 0; i < (fields[id].nTREES); i++) {
-				tPatt[i] = (double) measure_tree_offset(blur, idx[j]-1, i);
+			double *tPatt = patt + j*(pImageObject[id]->nTREES);
+			for (int i = 0; i < (pImageObject[id]->nTREES); i++) {
+				tPatt[i] = (double) pImageObject[id]->measure_tree_offset(blur, idx[j]-1, i);
 			}
 		}
 /*		
