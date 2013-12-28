@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pX,pEx,bbP0] = tldGeneratePositiveData(tld,overlap,im0,p_par)
+function [pX,pEx,bbP0] = tldGeneratePositiveData(tld,overlap,im0,p_par,n_object_tracked)
 
 pX   = [];
 pEx  = [];%zeros(prod(tld.patchsize),numWarps);
@@ -53,7 +53,7 @@ for i = 1:p_par.num_warps
     end
     
     % Measures on blured image
-    pX  = [pX fern(5,im1,idxP,0,tld.id)];
+    pX  = [pX fern(5,im1,idxP,0,tld.id,n_object_tracked)];
     % Measures on input image
     %pEx(:,i) = tldGetPattern(im1,bbP0,tld.model.patchsize);
     %pEx = [pEx tldGetPattern(im1,tld.grid(1:4,idxP),tld.model.patchsize)];

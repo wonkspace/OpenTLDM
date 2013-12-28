@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function [nX,nEx] = tldGenerateAprioriData(tld)
+function [nX,nEx] = tldGenerateAprioriData(tld,n_object_tracked)
 
 nX  = [];
 nEx = [];
@@ -30,7 +30,7 @@ for i = 1:length(files)
     img.input = imresize(img.input,tld.imgsize);
     img.blur  = imresize(img.blur,tld.imgsize);
     
-    [tnX,status] = fern(5,img,1:tld.nGrid,tld.var/2,tld.id);
+    [tnX,status] = fern(5,img,1:tld.nGrid,tld.var/2,tld.id,n_object_tracked);
     nX          = [nX tnX(:,status==1)];
 
     idx = randvalues(1:tld.nGrid,500);

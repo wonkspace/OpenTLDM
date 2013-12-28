@@ -1,0 +1,271 @@
+in the CLEANUP!!!
+in the INIT!!!
+-----in mex init function1 donver2 !!!1
+Im here**************************thrN = 5
+nBBOX = 1323583
+mBBOX = 6
+nTREES = 10
+nFEAT = 13
+nSCALE = 18
+iHEIGHT = 720
+iWIDTH = 1280
+BBOX_STEP = 7
+nBIT = 1
+
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+---------in mex EVALUATE PATTERNS function1!!!
+in the CLEANUP!!!
+in the INIT!!!
+-----in mex init function1 donver2 !!!1
+Im here**************************thrN = 5
+nBBOX = 491597
+mBBOX = 6
+nTREES = 10
+nFEAT = 13
+nSCALE = 19
+iHEIGHT = 720
+iWIDTH = 1280
+BBOX_STEP = 7
+nBIT = 1
+
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+---------in mex EVALUATE PATTERNS function1!!!
+in the CLEANUP!!!
+in the INIT!!!
+-----in mex init function1 donver2 !!!1
+Im here**************************thrN = 5
+nBBOX = 491250
+mBBOX = 6
+nTREES = 10
+nFEAT = 13
+nSCALE = 17
+iHEIGHT = 720
+iWIDTH = 1280
+BBOX_STEP = 7
+nBIT = 1
+
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+---------in mex EVALUATE PATTERNS function1!!!
+
+n_object_tracked =
+
+     3
+
+tlda(1,1).bb = (367.000000, 100.000000) (691.000000, 188.000000)
+tlda(1,2).bb = (379.000000, 220.000000) (661.000000, 364.000000)
+tlda(1,3).bb = (331.000000, 345.000000) (691.000000, 487.000000)
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 1323583 fields[id].nBBOX: 1323583
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 491597 fields[id].nBBOX: 491597
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 491250 fields[id].nBBOX: 491250
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+
+n_object_tracked =
+
+     2
+
+Fixed point #1 (b): (366.536879, 99.827471) (691.672818, 188.138543)
+Fixed point #2 (g): (378.703628, 219.917666) (661.156235, 364.149567)
+
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 1323583 fields[id].nBBOX: 1323583
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 491597 fields[id].nBBOX: 491597
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 491250 fields[id].nBBOX: 491250
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+
+n_object_tracked =
+
+     3
+
+Fixed point #1 (b): (366.991566, 99.985430) (691.123606, 188.021589)
+Fixed point #2 (g): (378.703598, 219.957939) (661.093805, 364.157868)
+Fixed point #3 (r): (330.389804, 344.533635) (691.305389, 486.896318)
+
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 1323583 fields[id].nBBOX: 1323583
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 491597 fields[id].nBBOX: 491597
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+-------------in mex DETECT function!!!!!!!
+1Wrong input. mxGetN(prhs[4]): 491250 fields[id].nBBOX: 491250
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+--------------------in mex GET PATTERNS function!!!!!!!11
+in mex UPDATE function!!!!!!!!!!!
+
+n_object_tracked =
+
+     4
+
+Index exceeds matrix dimensions.
+
+Error in tldDisplay (line 193)
+               bboxes(k).bb = [tldarray(:,k).bb(:,i);
+               tldarray(:,k).conf(i)];
+
+Error in tldExample (line 92)
+    tldDisplay(1,tlda,i); % display results on frame i
+
+Error in run_TLD (line 50)
+[bb,conf] = tldExample(opt,n_object_tracked);
+ 
+>> 

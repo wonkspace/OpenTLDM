@@ -20,7 +20,7 @@
 % for this function to execute properly.
 
 
-function tld = tldUpdateDetectorConservative(tld,I)
+function tld = tldUpdateDetectorConservative(tld,I,n_object_tracked)
 
 bb    = tld.bb(:,I);
 img   = tld.img{I};
@@ -80,7 +80,7 @@ idx = overlap < tld.n_par.overlap & tld.tmp.conf >= 0;
     %nX = nX(:,idx);
 
 % Update fern
-fern(2,[pX tld.tmp.patt(:,idx)],[pY zeros(1,sum(idx))],tld.model.thr_fern,2,tld.id);
+fern(2,[pX tld.tmp.patt(:,idx)],[pY zeros(1,sum(idx))],tld.model.thr_fern,2,tld.id,n_object_tracked);
 
 % Debug
 if 0
@@ -88,7 +88,7 @@ if 0
     subplot(121);
     imshow(img.input);bb_draw(tld.dt{I}.bb); title('before update');
     subplot(122);
-    fern(4,img,tld.control.maxbbox,tld.var,tld.tmp.conf,tld.tmp.patt,tld.id);
+    fern(4,img,tld.control.maxbbox,tld.var,tld.tmp.conf,tld.tmp.patt,tld.id,n_object_tracked);
     id_dt  = tld.tmp.conf > tld.model.thr_fern*tld.model.num_trees;
    
     imshow(img.input); bb_draw(tld.grid(:,id_dt));

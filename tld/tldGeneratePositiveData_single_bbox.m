@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function [pX,pY,pEx] = tldGeneratePositiveData_single_bbox(tld,bb0,im0,numWarps)
+function [pX,pY,pEx] = tldGeneratePositiveData_single_bbox(tld,bb0,im0,numWarps,n_object_tracked)
 
 % TODO: remove pIdx
 
@@ -36,7 +36,7 @@ for i = 1:numWarps
         pEx{i} = img_patch(im0.blur,bb0,1);
         im1.blur(rows,cols) = pEx{i};
     end
-    pX = [pX fern(5,im1,bb0,[],tld.id)];
+    pX = [pX fern(5,im1,bb0,[],tld.id,n_object_tracked)];
 end
 
 pIdx = repmat(idxP,1,numWarps);

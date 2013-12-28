@@ -84,9 +84,9 @@ ImageObject::ImageObject(int h) { // Constructor
 	OFF = NULL;
 	IIMG = NULL;
 	IIMG2 = NULL;
-	WEIGHT = initw;
-	nP = initn;
-	nN = initn;
+	WEIGHT.clear();
+	nP.clear();
+	nN.clear();
 	BBOX_STEP = 7;
 	nBIT = 1;
 }
@@ -245,6 +245,9 @@ void clearArrayOfObjects(){
 				else{
 	  				cout << "\rIIMG2 pointer in object " << i << " is null!" << flush;
 				};
+				pImageObject[i]->WEIGHT.clear();
+				pImageObject[i]->nP.clear();
+				pImageObject[i]->nN.clear();
 				mxFree(pImageObject[i]);
 	  			cout << "\rCleared object " << i << " in array" << flush;
 				usleep(5000);
@@ -254,6 +257,7 @@ void clearArrayOfObjects(){
 			};
 		}
 		mxFree(pImageObject);
+		pImageObject = NULL;
 	  	cout << endl << "Cleared array" << endl;
 	}
 	else{
@@ -289,30 +293,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		id = (int)(*id_);
 
 		// Get the number of image objects to be created and create an data structure to hold their attributes 
-		nObjectTracked = mxGetScalar(prhs[2]);
-		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * nObjectTracked);
-		mexMakeMemoryPersistent(pImageObject);
-		for(int i=0;i<nObjectTracked;i++){
-			pImageObject[i] = NULL;
-		}
-
-		for (int i=0;i<nObjectTracked;i++){
-			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
-			mexMakeMemoryPersistent(ptemp);
-			pImageObject[i] = new (ptemp) ImageObject(i);
-		}
-		mexAtExit(clearArrayOfObjects);
 
 		srand(0); // fix state of random generator
-		pImageObject[id]->thrN = 0; pImageObject[id]->nBBOX = 0; pImageObject[id]->mBBOX = 0; pImageObject[id]->nTREES = 0; pImageObject[id]->nFEAT = 0; pImageObject[id]->nSCALE = 0; pImageObject[id]->iHEIGHT = 0; pImageObject[id]->iWIDTH = 0;
-		//mexPrintf("--------in mex cleanup function!!!!!\n");
-		mxFree(pImageObject[id]->BBOX); pImageObject[id]->BBOX = NULL;
-		mxFree(pImageObject[id]->OFF); pImageObject[id]->OFF = NULL;
-		mxFree(pImageObject[id]->IIMG); pImageObject[id]->IIMG = NULL;
-		mxFree(pImageObject[id]->IIMG2); pImageObject[id]->IIMG2 = NULL;
-		pImageObject[id]->WEIGHT.clear();
-		pImageObject[id]->nP.clear();
-		pImageObject[id]->nN.clear();
+		clearArrayOfObjects();
 
 		//free(fields);
 		//mexPrintf("heeeeeeeere23232\n");
@@ -329,6 +312,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			 // =============================================================================
 	case 1:  {
 		mexPrintf("in the INIT!!!\n");
+
+		nObjectTracked = mxGetScalar(prhs[2]);
+		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * nObjectTracked);
+		mexMakeMemoryPersistent(pImageObject);
+		for(int i=0;i<nObjectTracked;i++){
+			pImageObject[i] = NULL;
+		}
+
+		for (int i=0;i<nObjectTracked;i++){
+			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
+			mexMakeMemoryPersistent(ptemp);
+			pImageObject[i] = new (ptemp) ImageObject(i);
+		}
+		mexAtExit(clearArrayOfObjects);
  
 		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
 		mexPrintf("-----in mex init function1 donver2 !!!1\n");

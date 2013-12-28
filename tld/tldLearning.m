@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function tld = tldLearning(tld,I)
+function tld = tldLearning(tld,I,n_object_tracked)
 
 bb    = tld.bb(:,I); % current bounding box
 img   = tld.img{I}; % current image
@@ -41,7 +41,7 @@ idx      = overlap < tld.n_par.overlap & tld.tmp.conf >= 1; % get indexes of neg
 overlap  = bb_overlap(bb,tld.dt{I}.bb); % measure overlap of the current bounding box with detections
 nEx      = tld.dt{I}.patch(:,overlap < tld.n_par.overlap); % get negative patches that are far from current bounding box
 
-fern(2,[pX tld.tmp.patt(:,idx)],[pY zeros(1,sum(idx))],tld.model.thr_fern,2,tld.id); % update the Ensemble Classifier (reuses the computation made by detector)
+fern(2,[pX tld.tmp.patt(:,idx)],[pY zeros(1,sum(idx))],tld.model.thr_fern,2,tld.id,n_object_tracked); % update the Ensemble Classifier (reuses the computation made by detector)
 tld = tldTrainNN(pEx,nEx,tld); % update nearest neighbor 
 
 

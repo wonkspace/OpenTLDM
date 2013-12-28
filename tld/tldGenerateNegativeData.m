@@ -15,12 +15,12 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function [nX,nEx] = tldGenerateNegativeData(tld,overlap,img)
+function [nX,nEx] = tldGenerateNegativeData(tld,overlap,img,n_object_tracked)
 
 % Measure patterns on all bboxes that are far from initial bbox
 
 idxN        = find(overlap<tld.n_par.overlap);
-[nX,status] = fern(5,img,idxN,tld.var/2,tld.id);
+[nX,status] = fern(5,img,idxN,tld.var/2,tld.id,n_object_tracked);
 idxN        = idxN(status==1); % bboxes far and with big variance
 nX          = nX(:,status==1);
 

@@ -46,7 +46,7 @@ tld.features  = tldGenerateFeatures(tld.model.num_trees,tld.model.num_features,0
 
 % Initialize Detector
 fern(0, tld.id,n_object_tracked); % cleanup
-fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id); % allocate structures
+fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id,n_object_tracked); % allocate structures
 % Temporal structures
 tld.tmp.conf = zeros(1,tld.nGrid);
 tld.tmp.patt = zeros(tld.model.num_trees,tld.nGrid);
@@ -85,7 +85,7 @@ overlap     = bb_overlap(tld.source.bb,tld.grid); % bottleneck
 tld.target = img_patch(tld.img{1}.input,tld.bb(:,1));
 
 % Generate Positive Examples
-[pX,pEx,bbP] = tldGeneratePositiveData(tld,overlap,tld.img{1},tld.p_par_init);
+[pX,pEx,bbP] = tldGeneratePositiveData(tld,overlap,tld.img{1},tld.p_par_init,n_object_tracked);
 pY = ones(1,size(pX,2));
 % disp(['# P patterns: ' num2str(size(pX,2))]);
 % disp(['# P patches : ' num2str(size(pEx,2))]);
@@ -124,7 +124,7 @@ tld.Y{1}    = tld.Y{1}(:,idx);
 
 % Fern
 bootstrap = 2;
-fern(2,tld.X{1},tld.Y{1},tld.model.thr_fern,bootstrap,tld.id);
+fern(2,tld.X{1},tld.Y{1},tld.model.thr_fern,bootstrap,tld.id,n_object_tracked);
 % Nearest Neighbor 
 
 tld.pex = [];
@@ -136,7 +136,7 @@ tld.model.num_init = size(tld.pex,2);
 % Estimate thresholds on validation set  ----------------------------------
 
 % Fern
-conf_fern = fern(3,nX2, tld.id);
+conf_fern = fern(3,nX2, tld.id,n_object_tracked);
 tld.model.thr_fern = max(max(conf_fern)/tld.model.num_trees,tld.model.thr_fern);
 
 % Nearest neighbor

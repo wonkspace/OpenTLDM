@@ -20,7 +20,7 @@
 % for this function to execute properly.
 
 
-function tld = tldUpdateDetector(tld,I)
+function tld = tldUpdateDetector(tld,I,n_object_tracked)
 
 bb    = tld.bb(:,I);
 conf  = tld.conf(:,I);
@@ -53,7 +53,7 @@ end
 nY = zeros(1,size(nX,2));
 
 % Update fern
-fern(2,[pX nX],[pY nY],tld.model.thr_fern,2,tld.id);
+fern(2,[pX nX],[pY nY],tld.model.thr_fern,2,tld.id,n_object_tracked);
 
 % Debug
 if tld.debug
@@ -64,7 +64,7 @@ if tld.debug
     subplot(121);
     imshow(img.input);bb_draw(tld.dt{I}.bb); title('before update');
     subplot(122);
-    fern(4,img,tld.control.maxbbox,tld.var,tld.tmp.conf,tld.tmp.patt,tld.id);
+    fern(4,img,tld.control.maxbbox,tld.var,tld.tmp.conf,tld.tmp.patt,tld.id,n_object_tracked);
     id_dt  = tld.tmp.conf > tld.thr_fern*tld.num_trees;
     imshow(img.input); bb_draw(tld.grid(:,id_dt));
 end

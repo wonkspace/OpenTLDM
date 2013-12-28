@@ -15,10 +15,10 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function tld = tldInitDetector(tld)
+function tld = tldInitDetector(tld,n_object_tracked)
 
 fern(0,tld.id,tld.n_object_tracked);
-fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id);
+fern(1,tld.source.im0.input,tld.grid,tld.features,tld.scales,tld.id,n_object_tracked);
 
 % Variance
 tld.pex    = [tld.pex tldGetPattern(tld.source.im0,tld.source.bb,tld.patchsize)];
@@ -42,7 +42,7 @@ X = X(:,idx);
 Y = Y(:,idx);
 IDX = IDX(:,idx);
 
-conf = fern(2,X,Y,1,2,tld.id);
+conf = fern(2,X,Y,1,2,tld.id,n_object_tracked);
 
 % Nearest-Neighbor
 idx = Y==0 & conf >= tld.features.margin-2;
