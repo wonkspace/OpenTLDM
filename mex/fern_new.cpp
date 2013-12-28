@@ -28,9 +28,12 @@
 	#define CHAR16_T
 #endif
 #define sub2idx(row,col,height) ((int) (floor((row)+0.5) + floor((col)+0.5)*(height)))
+using namespace std;
+vector<vector<double> > initw;
+vector<vector<int> > initn;
+
 double randdouble(); 
 
-using namespace std;
 
 class ImageObject {
 public:
@@ -79,8 +82,11 @@ ImageObject::ImageObject(int h) { // Constructor
 	iWIDTH = 0;
 	BBOX = NULL;
 	OFF = NULL;
-	IIMG = 0;
-	IIMG2 = 0;
+	IIMG = NULL;
+	IIMG2 = NULL;
+	WEIGHT = initw;
+	nP = initn;
+	nN = initn;
 	BBOX_STEP = 7;
 	nBIT = 1;
 }
@@ -166,7 +172,7 @@ double ImageObject::measure_bbox_offset(unsigned char *blur, int idx_bbox, doubl
 
 int* ImageObject::create_offsets(double *scale0, double *x0) {
 
-	int *offsets = (int*) malloc(nSCALE*nTREES*nFEAT*2*sizeof(int));
+	int *offsets = (int*) mxMalloc(nSCALE*nTREES*nFEAT*2*sizeof(int));
 	int *off = offsets;
 
 	for (int k = 0; k < nSCALE; k++){
@@ -184,7 +190,7 @@ int* ImageObject::create_offsets(double *scale0, double *x0) {
 
 int* ImageObject::create_offsets_bbox(double *bb0) {
 
-	int *offsets = (int*) malloc(BBOX_STEP*nBBOX*sizeof(int));
+	int *offsets = (int*) mxMalloc(BBOX_STEP*nBBOX*sizeof(int));
 	int *off = offsets;
 
 	for (int i = 0; i < nBBOX; i++) {
@@ -207,22 +213,52 @@ double randdouble()
 } 
 
 ImageObject **pImageObject= NULL;
-int num_tracked = 0;
+int nObjectTracked = 0;
 double* id_;
 int id = 0;
 
 void clearArrayOfObjects(){
 	if(pImageObject != NULL) {
-		for(int i=0;i<num_tracked;i++){
+		for(int i=0;i<nObjectTracked;i++){
 			if(pImageObject[i] != NULL){
+				if(pImageObject[i]->BBOX != NULL){
+					mxFree(pImageObject[i]->BBOX);
+				}
+				else{
+	  				cout << "\rBBOX pointer in object " << i << " is null!" << flush;
+				};
+				if(pImageObject[i]->OFF != NULL){
+					mxFree(pImageObject[i]->OFF);
+				}
+				else{
+	  				cout << "\rOFF pointer in object " << i << " is null!" << flush;
+				};
+				if(pImageObject[i]->IIMG != NULL){
+					mxFree(pImageObject[i]->IIMG);
+				}
+				else{
+	  				cout << "\rIIMG pointer in object " << i << " is null!" << flush;
+				};
+				if(pImageObject[i]->IIMG2 != NULL){
+					mxFree(pImageObject[i]->IIMG2);
+				}
+				else{
+	  				cout << "\rIIMG2 pointer in object " << i << " is null!" << flush;
+				};
 				mxFree(pImageObject[i]);
 	  			cout << "\rCleared object " << i << " in array" << flush;
 				usleep(5000);
 			}
+			else{
+	  				cout << "\rImageObject pointer in object " << i << " is null!" << flush;
+			};
 		}
 		mxFree(pImageObject);
 	  	cout << endl << "Cleared array" << endl;
 	}
+	else{
+		cout << "\rImageObject array pointer is null!" << flush;
+	};
 }
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -248,17 +284,32 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		// CLEANUP: function(0);
 		// =============================================================================
 	case 0:  {
-		//mexPrintf("in the cleanup!!!\n");
+		mexPrintf("in the CLEANUP!!!\n");
 		id_ = mxGetPr(prhs[1]);
 		id = (int)(*id_);
+
+		// Get the number of image objects to be created and create an data structure to hold their attributes 
+		nObjectTracked = mxGetScalar(prhs[2]);
+		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * nObjectTracked);
+		mexMakeMemoryPersistent(pImageObject);
+		for(int i=0;i<nObjectTracked;i++){
+			pImageObject[i] = NULL;
+		}
+
+		for (int i=0;i<nObjectTracked;i++){
+			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
+			mexMakeMemoryPersistent(ptemp);
+			pImageObject[i] = new (ptemp) ImageObject(i);
+		}
+		mexAtExit(clearArrayOfObjects);
 
 		srand(0); // fix state of random generator
 		pImageObject[id]->thrN = 0; pImageObject[id]->nBBOX = 0; pImageObject[id]->mBBOX = 0; pImageObject[id]->nTREES = 0; pImageObject[id]->nFEAT = 0; pImageObject[id]->nSCALE = 0; pImageObject[id]->iHEIGHT = 0; pImageObject[id]->iWIDTH = 0;
 		//mexPrintf("--------in mex cleanup function!!!!!\n");
-		free(pImageObject[id]->BBOX); pImageObject[id]->BBOX = 0;
-		free(pImageObject[id]->OFF); pImageObject[id]->OFF = 0;
-		free(pImageObject[id]->IIMG); pImageObject[id]->IIMG = 0;
-		free(pImageObject[id]->IIMG2); pImageObject[id]->IIMG2 = 0;
+		mxFree(pImageObject[id]->BBOX); pImageObject[id]->BBOX = NULL;
+		mxFree(pImageObject[id]->OFF); pImageObject[id]->OFF = NULL;
+		mxFree(pImageObject[id]->IIMG); pImageObject[id]->IIMG = NULL;
+		mxFree(pImageObject[id]->IIMG2); pImageObject[id]->IIMG2 = NULL;
 		pImageObject[id]->WEIGHT.clear();
 		pImageObject[id]->nP.clear();
 		pImageObject[id]->nN.clear();
@@ -273,10 +324,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		return;
 	}
 
-			 // INIT: function(1, img, bb, features, scales, id, num_tracked)
+			 // INIT: function(1, img, bb, features, scales, id, nObjectTracked)
 			 //                0  1    2   3         4
 			 // =============================================================================
 	case 1:  {
+		mexPrintf("in the INIT!!!\n");
  
 		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
 		mexPrintf("-----in mex init function1 donver2 !!!1\n");
@@ -284,20 +336,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		id_ = mxGetPr(prhs[5]);
 		id = (int)(*id_);
 
-		// Get the number of image objects to be created and create an data structure to hold their attributes 
-		num_tracked = mxGetScalar(prhs[6]);
-		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * num_tracked);
-		mexMakeMemoryPersistent(pImageObject);
-		for(int i=0;i<num_tracked;i++){
-			pImageObject[i] = NULL;
-		}
-
-		for (int i=0;i<num_tracked;i++){
-			ImageObject * ptemp = (ImageObject *)mxMalloc(sizeof(ImageObject));
-			mexMakeMemoryPersistent(ptemp);
-			pImageObject[i] = new (ptemp) ImageObject(i);
-		}
-		mexAtExit(clearArrayOfObjects);
 
 		/*if(id == 0) {
 			mexPrintf("heeererererere\n");
@@ -319,12 +357,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		pImageObject[id]->thrN       = 0.5 * pImageObject[id]->nTREES;
 		pImageObject[id]->nSCALE     = mxGetN(prhs[4]);
 		
-		pImageObject[id]->IIMG       = (double*) malloc(pImageObject[id]->iHEIGHT*pImageObject[id]->iWIDTH*sizeof(double));
-		pImageObject[id]->IIMG2      = (double*) malloc(pImageObject[id]->iHEIGHT*pImageObject[id]->iWIDTH*sizeof(double));
+		pImageObject[id]->IIMG       = (double*) mxMalloc(pImageObject[id]->iHEIGHT*pImageObject[id]->iWIDTH*sizeof(double));
+		pImageObject[id]->IIMG2      = (double*) mxMalloc(pImageObject[id]->iHEIGHT*pImageObject[id]->iWIDTH*sizeof(double));
 		//mexPrintf("here2\n");
 		// BBOX
+		mexPrintf("Im here ***********************");
 		pImageObject[id]->mBBOX      = mxGetM(prhs[2]); 
 		pImageObject[id]->nBBOX      = mxGetN(prhs[2]);
+		pImageObject[id]->display();	
 		//mexPrintf("nBBox = %d..........", pImageObject[id]->nBBOX);
 		pImageObject[id]->BBOX	   = pImageObject[id]->create_offsets_bbox(mxGetPr(prhs[2]));
 		double *x  = mxGetPr(mxGetField(prhs[3],0,"x"));
@@ -355,7 +395,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// UPDATE
 	// =============================================================================
 	case 2: {
-		//mexPrintf("in mex update function!!!!!!!!!!!\n");
+		mexPrintf("in mex UPDATE function!!!!!!!!!!!\n");
 		if (nrhs!=6 && nrhs!=7) { mexPrintf("Conf = function(2,X,Y,Margin,Bootstrap,Id)\n"); return; }
 		//                                                   0 1 2 3      4         5
 
@@ -448,7 +488,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// EVALUATE PATTERNS
 	// =============================================================================
 	case 3: {
-		//mexPrintf("---------in mex evaluate patterns function1!!!\n");
+		mexPrintf("---------in mex EVALUATE PATTERNS function1!!!\n");
 		
 		id_ = mxGetPr(prhs[2]);
 		id = (int)(*id_);
@@ -481,7 +521,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			// DETECT: TOTAL RECALL
 			// =============================================================================
 	case 4: {
-		//mexPrintf("-------------in mex detect function!!!!!!!\n");
+		mexPrintf("-------------in mex DETECT function!!!!!!!\n");
 		id_ = mxGetPr(prhs[6]);
 		id = (int)(*id_);
 /*		if(id == 0)
@@ -496,7 +536,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 //		mexPrintf("Detect!!!\n");
 		// Pointer to preallocated output matrixes
-		double *conf = mxGetPr(prhs[4]); if ( mxGetN(prhs[4]) != pImageObject[id]->nBBOX) { mexPrintf("1Wrong input.\n"); return; }
+		double *conf = mxGetPr(prhs[4]); if ( mxGetN(prhs[4]) != pImageObject[id]->nBBOX) { mexPrintf("1Wrong input mxGetN(prhs[4]: %d nBBOX: %d\n",mxGetN(prhs[4]), pImageObject[id]->nBBOX); return; }
 		double *patt = mxGetPr(prhs[5]); if ( mxGetN(prhs[5]) != pImageObject[id]->nBBOX) { mexPrintf("2Wrong input.\n"); return; }
 		for (int i = 0; i < pImageObject[id]->nBBOX; i++) { conf[i] = -1; }
 
@@ -517,7 +557,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		iimg2(input,pImageObject[id]->IIMG2,pImageObject[id]->iHEIGHT,pImageObject[id]->iWIDTH);
 
 		// log: 0 - not visited, 1 - visited
-		int *log = (int*) calloc(pImageObject[id]->nBBOX,sizeof(int));
+		int *log = (int*) mxCalloc(pImageObject[id]->nBBOX,sizeof(int));
 
 		// variance
 		double minVar = *mxGetPr(prhs[3]);
@@ -563,7 +603,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			
 		}
 
-		free(log);
+		mxFree(log);
 	/*	if(id == 0)
 			fern1 = *tmp;
 		else
@@ -574,7 +614,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 			// GET PATTERNS
 	case 5: {
-	//	mexPrintf("--------------------in mex get patterns function!!!!!!!11\n");
+		mexPrintf("--------------------in mex GET PATTERNS function!!!!!!!11\n");
 		if (nrhs !=5) { mexPrintf("patterns = fern(5,img,idx,var,id)\n"); return; }
 		//                                         0 1   2   3   4  
 		id_ = mxGetPr(prhs[4]);

@@ -86,6 +86,28 @@ struct fieldstruct {
 #define sub2idx(row,col,height) ((int) (floor((row)+0.5) + floor((col)+0.5)*(height)))
 
 
+void display()
+{
+	#ifdef _WIN32
+		/* TODO */
+	#else
+		cout << "handle = " << fields[id].handle << endl; 
+		cout << "thrN = " << fields[id].thrN << endl;
+		cout << "nBBOX = " << fields[id].nBBOX << endl;
+		cout << "mBBOX = " << fields[id].mBBOX << endl;
+		cout << "nTREES = " << fields[id].nTREES << endl;
+		cout << "nFEAT = " << fields[id].nFEAT << endl;
+		cout << "nSCALE = " << fields[id].nSCALE << endl;
+		cout << "iHEIGHT = " << fields[id].iHEIGHT << endl;
+		cout << "iWIDTH = " << fields[id].iWIDTH << endl;
+		cout << "BBOX_STEP = " << fields[id].BBOX_STEP << endl;
+		cout << "nBIT = " << fields[id].nBIT << endl << endl;
+
+	#endif
+}
+
+
+
 //Fernstruct fern2;
 //Fernstruct* tmp;
 /*
@@ -311,7 +333,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		// CLEANUP: function(0);
 		// =============================================================================
 	case 0:  {
-		//mexPrintf("in the cleanup!!!\n");
+		mexPrintf("in the CLEANUP!!!\n");
 		id_ = mxGetPr(prhs[1]);
 		id = (int)(*id_);
 
@@ -340,6 +362,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			 //                0  1    2   3         4
 			 // =============================================================================
 	case 1:  {
+		mexPrintf("in the INIT!!!\n");
  
 		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
 		mexPrintf("-----in mex init function1 donver2 !!!1\n");
@@ -370,8 +393,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		fields[id].IIMG2      = (double*) malloc(fields[id].iHEIGHT*fields[id].iWIDTH*sizeof(double));
 		//mexPrintf("here2\n");
 		// BBOX
+		mexPrintf("Im here**************************");
 		fields[id].mBBOX      = mxGetM(prhs[2]); 
 		fields[id].nBBOX      = mxGetN(prhs[2]);
+		display();
+
 		//mexPrintf("nBBox = %d..........", fields[id].nBBOX);
 		fields[id].BBOX	   = create_offsets_bbox(mxGetPr(prhs[2]));
 		double *x  = mxGetPr(mxGetField(prhs[3],0,"x"));
@@ -402,7 +428,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// UPDATE
 	// =============================================================================
 	case 2: {
-		//mexPrintf("in mex update function!!!!!!!!!!!\n");
+		mexPrintf("in mex UPDATE function!!!!!!!!!!!\n");
 		if (nrhs!=6 && nrhs!=7) { mexPrintf("Conf = function(2,X,Y,Margin,Bootstrap,Id)\n"); return; }
 		//                                                   0 1 2 3      4         5
 
@@ -495,7 +521,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// EVALUATE PATTERNS
 	// =============================================================================
 	case 3: {
-		//mexPrintf("---------in mex evaluate patterns function1!!!\n");
+		mexPrintf("---------in mex EVALUATE PATTERNS function1!!!\n");
 		
 		id_ = mxGetPr(prhs[2]);
 		id = (int)(*id_);
@@ -528,7 +554,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			// DETECT: TOTAL RECALL
 			// =============================================================================
 	case 4: {
-		//mexPrintf("-------------in mex detect function!!!!!!!\n");
+		mexPrintf("-------------in mex DETECT function!!!!!!!\n");
 		id_ = mxGetPr(prhs[6]);
 		id = (int)(*id_);
 /*		if(id == 0)
@@ -543,7 +569,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 //		mexPrintf("Detect!!!\n");
 		// Pointer to preallocated output matrixes
-		double *conf = mxGetPr(prhs[4]); if ( mxGetN(prhs[4]) != fields[id].nBBOX) { mexPrintf("1Wrong input.\n"); return; }
+		double *conf = mxGetPr(prhs[4]); if ( mxGetN(prhs[4]) == fields[id].nBBOX) { mexPrintf("1Wrong input. mxGetN(prhs[4]): %d fields[id].nBBOX: %d\n",mxGetN(prhs[4]),fields[id].nBBOX); return; }
 		double *patt = mxGetPr(prhs[5]); if ( mxGetN(prhs[5]) != fields[id].nBBOX) { mexPrintf("2Wrong input.\n"); return; }
 		for (int i = 0; i < fields[id].nBBOX; i++) { conf[i] = -1; }
 
@@ -621,7 +647,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 			// GET PATTERNS
 	case 5: {
-	//	mexPrintf("--------------------in mex get patterns function!!!!!!!11\n");
+		mexPrintf("--------------------in mex GET PATTERNS function!!!!!!!11\n");
 		if (nrhs !=5) { mexPrintf("patterns = fern(5,img,idx,var,id)\n"); return; }
 		//                                         0 1   2   3   4  
 		id_ = mxGetPr(prhs[4]);
