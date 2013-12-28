@@ -289,6 +289,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		// =============================================================================
 	case 0:  {
 		mexPrintf("in the CLEANUP!!!\n");
+		if (nrhs!=3) { mexPrintf("fern: wrong input.\n"); return; }
+		nObjectTracked = mxGetScalar(prhs[2]);
 		id_ = mxGetPr(prhs[1]);
 		id = (int)(*id_);
 
@@ -312,8 +314,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			 // =============================================================================
 	case 1:  {
 		mexPrintf("in the INIT!!!\n");
+		if (nrhs!=7) { mexPrintf("fern: wrong input.\n"); return; }
+		nObjectTracked = mxGetScalar(prhs[6]);
 
-		nObjectTracked = mxGetScalar(prhs[2]);
 		pImageObject = (ImageObject **)mxMalloc(sizeof(ImageObject *) * nObjectTracked);
 		mexMakeMemoryPersistent(pImageObject);
 		for(int i=0;i<nObjectTracked;i++){
@@ -327,7 +330,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 		mexAtExit(clearArrayOfObjects);
  
-		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
 		mexPrintf("-----in mex init function1 donver2 !!!1\n");
 	
 		id_ = mxGetPr(prhs[5]);
@@ -393,7 +395,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// =============================================================================
 	case 2: {
 		mexPrintf("in mex UPDATE function!!!!!!!!!!!\n");
-		if (nrhs!=6 && nrhs!=7) { mexPrintf("Conf = function(2,X,Y,Margin,Bootstrap,Id)\n"); return; }
+		if (nrhs!=7) { mexPrintf("fern: wrong input.\n"); return; }
+		nObjectTracked = mxGetScalar(prhs[6]);
+
+		if (nrhs!=7) { mexPrintf("Conf = function(2,X,Y,Margin,Bootstrap,Id)\n"); return; }
 		//                                                   0 1 2 3      4         5
 
 		id_ = mxGetPr(prhs[5]);
@@ -486,6 +491,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// =============================================================================
 	case 3: {
 		mexPrintf("---------in mex EVALUATE PATTERNS function1!!!\n");
+		if (nrhs!=4) { mexPrintf("fern: wrong input.\n"); return; }
+		nObjectTracked = mxGetScalar(prhs[3]);
 		
 		id_ = mxGetPr(prhs[2]);
 		id = (int)(*id_);
@@ -494,7 +501,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		else
 			tmp = &fern2;
 */
-		if (nrhs!=3) { mexPrintf("Conf = function(3,X,id)\n"); return; }
+		if (nrhs!=4) { mexPrintf("Conf = function(3,X,id)\n"); return; }
 		//                                        0 1  
 
 		double *X     = mxGetPr(prhs[1]);
@@ -519,6 +526,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			// =============================================================================
 	case 4: {
 		mexPrintf("-------------in mex DETECT function!!!!!!!\n");
+		if (nrhs!=8) { mexPrintf("fern: wrong input.\n"); return; }
+		nObjectTracked = mxGetScalar(prhs[7]);
+
 		id_ = mxGetPr(prhs[6]);
 		id = (int)(*id_);
 /*		if(id == 0)
@@ -612,7 +622,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			// GET PATTERNS
 	case 5: {
 		mexPrintf("--------------------in mex GET PATTERNS function!!!!!!!11\n");
-		if (nrhs !=5) { mexPrintf("patterns = fern(5,img,idx,var,id)\n"); return; }
+		if (nrhs!=6) { mexPrintf("fern: wrong input.\n"); return; }
+		nObjectTracked = mxGetScalar(prhs[5]);
+
+		if (nrhs !=6) { mexPrintf("patterns = fern(5,img,idx,var,id)\n"); return; }
 		//                                         0 1   2   3   4  
 		id_ = mxGetPr(prhs[4]);
 		id = (int)(*id_);
